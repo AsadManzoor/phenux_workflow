@@ -1615,7 +1615,7 @@ async function exportDeck(){
     cv.push(c);await yieldUI()}
   await finish(cv,'pdf','Studio-Workflow-Build-High-Level-Deck');progOff();toast('Deck exported: '+total+' pages.')}
 // ---------- flowchart
-const TIERS={simple:{NW:190,NH:88,gx:70,gy:40,name:'Simple'},mid:{NW:190,NH:172,gx:70,gy:30,name:'Mid-detail'},detail:{NW:250,NH:250,gx:62,gy:24,name:'Detailed'}};
+const TIERS={simple:{NW:190,NH:160,gx:70,gy:40,name:'Simple'},mid:{NW:190,NH:172,gx:70,gy:30,name:'Mid-detail'},detail:{NW:250,NH:250,gx:62,gy:24,name:'Detailed'}};
 const stK=s=>{const m=/^(\d+)([A-Z]?)/.exec(s||'');return m?[+m[1],m[2]]:[99,'']};
 const stCmp=(a,b)=>{const x=stK(a),y=stK(b);return x[0]-y[0]||x[1].localeCompare(y[1])};
 const stLab=s=>{const m=/^(\d+[A-Z]?)\s+([^—]*?)\s*(—.*)?$/.exec(s||'');return m?'STAGE '+m[1]+' · '+m[2].trim():String(s||'Other').replace(/\s*\(.*\)/,'').toUpperCase()};
@@ -1647,7 +1647,7 @@ function graph(ids){
   const lps=[];const ls=new Set();lp.forEach(([a,b])=>{const k=a+'\u0001'+b;if(!ls.has(k)){ls.add(k);lps.push([a,b])}});
   return{stages,sOf,FR,lps,lay}}
 function layout(sc,tier){
-  const t=TIERS[tier],{ids}=sc,G=graph(ids),top=262,botY=848,hdr=40,padB=12,rowsMax=Math.max(1,Math.floor((botY-top-hdr-padB+t.gy+.5)/(t.NH+t.gy)));
+  const t=TIERS[tier],{ids}=sc,G=graph(ids),top=262,botY=848,hdr=tier==='simple'?56:40,padB=12,rowsMax=Math.max(1,Math.floor((botY-top-hdr-padB+t.gy+.5)/(t.NH+t.gy)));
   const panels=[];G.stages.forEach((s,k)=>{const nodes=ids.filter(i=>G.sOf(i)===k);const L={};nodes.forEach(i=>(L[G.lay[i]]=L[G.lay[i]]||[]).push(i));
     const lk=Object.keys(L).map(Number).sort((a,b)=>a-b),row={};
     lk.forEach((l,li)=>{L[l].sort((a,b)=>{const bc=x=>{const p=G.FR.filter(([u,v])=>v===x&&G.sOf(u)===k).map(([u])=>row[u]).filter(v=>v!=null);return p.length?p.reduce((s,v)=>s+v,0)/p.length:1e3};return bc(a)-bc(b)||ids.indexOf(a)-ids.indexOf(b)});L[l].forEach((x,i)=>row[x]=i)});
@@ -1664,6 +1664,36 @@ function layout(sc,tier){
 function chipsRow(g,items,x,y,w,col,lh=22){let cx=x,cy=y;items.forEach(([s,hl])=>{g.font=`400 9.5px ${MF}`;const cw=g.measureText(s).width+14;if(cx+cw>x+w){cx=x;cy+=lh}rr(g,cx,cy,cw,17,4);if(hl){g.fillStyle=hexA(col,.16);g.fill()}g.strokeStyle=hl?col:'#3a434b';g.lineWidth=1;g.stroke();g.fillStyle=hl?'#eef1f3':'#aab4bb';g.fillText(s,cx+7,cy+12);cx+=cw+5});return cy+lh-y}
 const tierS=n=>{const a=(n.streams||[]).map(s=>{const m=/Tier\s+(\w+)/.exec(s);return m?m[1]:slabS(s).replace(/^.*?:\s*/,'')});const nu=a.filter(x=>/^\d/.test(x)),ot=a.filter(x=>!/^\d/.test(x));return [nu.length?'Tier '+nu.join(' · '):'',...ot].filter(Boolean).join(' · ')};
 function briefDesc(n){const d=String(n.desc||'').split('\n').map(s=>s.trim()).filter(Boolean);let s=(d.length>1?d.slice(1).join(' '):d[0]||'').replace(/\[[^\]]*\]\s*/g,m=>/BYPASSED/i.test(m)?m:'').replace(/\s+/g,' ');return s.length>170?s.slice(0,170).replace(/\s+\S*$/,'')+'…':s}
+function shortDesc(n){let d=String(n.desc||'').split('\n').map(s=>s.trim()).filter(s=>s&&!/^\*?NOTE/i.test(s));let s=(d.length>1?d.slice(1).join(' '):d[0]||'').replace(/\[[^\]]*\]\s*/g,'').replace(/https?:\/\//g,'').replace(/\s*\([^)]*\)/g,'').replace(/\s*\[[^\]]*\]/g,'').replace(/\s+/g,' ').trim();
+  s=s.split(/(?<=[a-z\)])\.\s/)[0].replace(/\.$/,'');let w=s.split(' ');if(w.length>9){const cl=s.split(/[,;:]\s/)[0].split(' ');w=cl.length>=4&&cl.length<=9?cl:w.slice(0,8)}
+  while(w.length>3&&/^(and|or|the|a|an|to|of|for|with|in|on|from|into|by|via|then|that|which|so)$/i.test(w[w.length-1]))w.pop();
+  s=w.join(' ').replace(/[\s,;:(\-–\/&+]+$/,'');return s.charAt(0).toUpperCase()+s.slice(1)}
+function nodeSimple(g,id,x,y,t,col,ix,last){const n=N[id];g.save();rr(g,x,y,t.NW,t.NH,6);g.fillStyle=last?col:'#101418';g.fill();
+  if(!last){g.strokeStyle='#2a3138';g.lineWidth=1;g.stroke();g.fillStyle='#fff';g.globalAlpha=.9;g.fillRect(x+3,y,t.NW-6,2);g.globalAlpha=1}
+  const nc=last?'#06101f':'#7d8790',tc=last?'#06101f':'#eef1f3',dc=last?'#0a2347':'#8a959d';
+  text(g,ix,x+15,y+58,`700 56px ${HF}`,nc,-.5);
+  g.font=`700 17px ${HF}`;sp(g,.4);const L=wrap(g,n.name.toUpperCase(),t.NW-30,3);g.fillStyle=tc;L.forEach((l,i)=>g.fillText(l,x+15,y+84+i*18));sp(g,0);
+  const dy=y+84+(L.length-1)*18+20,mx=Math.max(1,Math.floor((y+t.NH-10-dy)/15)+1);g.font=`400 11.5px ${SF}`;g.fillStyle=dc;para(g,shortDesc(n),x+15,dy,t.NW-30,15,Math.min(3,mx));g.restore()}
+function rpoly(g,P,r){g.beginPath();g.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length-1;i++){const a=P[i-1],b=P[i],c=P[i+1],d1=Math.hypot(b[0]-a[0],b[1]-a[1]),d2=Math.hypot(c[0]-b[0],c[1]-b[1]),k=Math.min(r,d1/2,d2/2);g.lineTo(b[0]-(b[0]-a[0])/d1*k,b[1]-(b[1]-a[1])/d1*k);g.quadraticCurveTo(b[0],b[1],b[0]+(c[0]-b[0])/d2*k,b[1]+(c[1]-b[1])/d2*k)}g.lineTo(P[P.length-1][0],P[P.length-1][1]);g.stroke()}
+function routeSimple(g,L,pi){const {pos,G,t}=L,here=id=>pos[id]&&pos[id].page===pi,ids=Object.keys(pos).filter(here);
+  const xs=[...new Set(ids.map(i=>pos[i].x))].sort((a,b)=>a-b),gi=x=>xs.indexOf(x);
+  const E=G.FR.filter(([a,b])=>here(a)&&here(b)&&pos[a].x<pos[b].x);
+  const pf=(k,i,o)=>k===1?.5:(o?.22:.38)+.40*i/(k-1),outs={},ins={};
+  E.forEach(e=>{(outs[e[0]]=outs[e[0]]||[]).push(e);(ins[e[1]]=ins[e[1]]||[]).push(e)});
+  Object.values(outs).forEach(a=>a.sort((p,q)=>pos[p[1]].y-pos[q[1]].y||pos[p[1]].x-pos[q[1]].x));Object.values(ins).forEach(a=>a.sort((p,q)=>pos[p[0]].y-pos[q[0]].y));
+  const hit=(xa,xb,y,ex)=>ids.some(i=>!ex.includes(i)&&pos[i].x<Math.max(xa,xb)&&pos[i].x+t.NW>Math.min(xa,xb)&&y>pos[i].y-4&&y<pos[i].y+t.NH+4);
+  const lanes={},slotX=(g0,a,b)=>{const gs=xs[g0]+t.NW,ge=xs[g0+1],mid=(gs+ge)/2,sp=Math.min(11,(ge-gs-28)/3);const lo=Math.min(a,b)-6,hi=Math.max(a,b)+6,arr=lanes[g0]=lanes[g0]||[];
+    for(let k=0;k<9;k++){const off=(k%2?1:-1)*Math.ceil(k/2)*sp;if(!arr.some(z=>z.k===k&&z.lo<hi&&z.hi>lo)){arr.push({k,lo,hi});return mid+off}}return mid};
+  const paths=[];
+  E.forEach(e=>{const[a,b]=e,A=pos[a],B=pos[b],i=outs[a].indexOf(e),j=ins[b].indexOf(e),y0=A.y+t.NH*pf(outs[a].length,i,1),y1=B.y+t.NH*pf(ins[b].length,j,0),x0=A.x+t.NW,x1=B.x;
+    if(Math.abs(y0-y1)<1.5){paths.push({P:[[x0,y0],[x1,y1]]});return}
+    const gA=gi(A.x),gB=gi(B.x)-1;let g0=gA,mode='a';
+    if(gA!==gB){const lxA=(xs[gA]+t.NW+xs[gA+1])/2,lxB=(xs[gB]+t.NW+xs[gB+1])/2;if(hit(lxA,x1,y1,[b]))mode=!hit(x0,lxB,y0,[a])?'b':'a';if(mode==='b')g0=gB}
+    paths.push({a:y0,b:y1,g0,mode,x0,x1,y0,y1})});
+  paths.sort((p,q)=>Math.abs((q.b||0)-(q.a||0))-Math.abs((p.b||0)-(p.a||0)));
+  paths.forEach(p=>{if(p.P)return;const lx=slotX(p.g0,p.y0,p.y1);p.P=p.mode==='a'?[[p.x0,p.y0],[lx,p.y0],[lx,p.y1],[p.x1,p.y1]]:[[p.x0,p.y0],[lx,p.y0],[lx,p.y1],[p.x1,p.y1]]});
+  g.strokeStyle='#c9d1d6';g.fillStyle='#c9d1d6';g.lineWidth=1.7;g.lineJoin='round';
+  paths.forEach(p=>{const P=p.P;rpoly(g,P.slice(0,-1).concat([[P[P.length-1][0]-8,P[P.length-1][1]]]),6);const e=P[P.length-1];g.beginPath();g.moveTo(e[0],e[1]);g.lineTo(e[0]-9,e[1]-4.5);g.lineTo(e[0]-9,e[1]+4.5);g.closePath();g.fill()})}
 function node(g,id,x,y,t,tier,col,im,ix){const n=N[id];g.save();rr(g,x,y,t.NW,t.NH,10);g.fillStyle='#101418';g.fill();g.save();rr(g,x,y,t.NW,t.NH,10);g.clip();
   const title=n.name.toUpperCase();
   if(tier==='simple'){cover(g,im,x,y,62,t.NH,.85);setf(g,700,14,HF);sp(g,.3);const L=wrap(g,title,t.NW-62-24,3);text(g,ix,x+74,y+t.NH/2-L.length*8-2,`700 11px ${MF}`,col,1);g.font=`700 15px ${HF}`;g.fillStyle='#eef1f3';sp(g,.3);L.forEach((l,i)=>g.fillText(l,x+74,y+t.NH/2-L.length*8+16+i*16-2));sp(g,0)}
@@ -1677,31 +1707,34 @@ function node(g,id,x,y,t,tier,col,im,ix){const n=N[id];g.save();rr(g,x,y,t.NW,t.
   g.restore();g.fillStyle='#fff';g.globalAlpha=.9;g.fillRect(x+6,y,t.NW-12,2);g.globalAlpha=1;rr(g,x+.5,y+.5,t.NW-1,t.NH-1,10);g.strokeStyle='#2a3138';g.lineWidth=1;g.stroke();g.restore()}
 async function drawFlowPage(sc,L,pi,np,tier,blurb,stubs){
   const [c,g]=mk(),{pages,pos,G,t}=L,pg=pages[pi],col=sc.col;bg(g);
-  text(g,sc.eyebrow.toUpperCase()+(pi?' · CONTINUED':''),44,40,`400 11px ${MF}`,col,2.2);
-  let fs=54;setf(g,700,fs,HF);sp(g,.3);while(g.measureText(sc.title.toUpperCase()).width>1100&&fs>28){fs-=2;setf(g,700,fs,HF)}g.fillStyle='#eef1f3';g.fillText(sc.title.toUpperCase(),44,40+fs*.9);sp(g,0);
-  g.font=`400 14px ${SF}`;g.fillStyle='#b9c2c8';const bl=para(g,blurb,44,126,780,21,3);
-  let fx=44;const fy=126+bl*21+8;text(g,'FILTERS',fx,fy+14,`400 11px ${MF}`,'#8a959d',1);fx+=62;sc.filters.forEach(f=>{fx+=pill(g,f,fx,fy,col,hexA(col,.13),22,`400 11px ${MF}`)+8});
+  const SM=tier==='simple';
+  if(!SM)text(g,sc.eyebrow.toUpperCase()+(pi?' · CONTINUED':''),44,40,`400 11px ${MF}`,col,2.2);
+  let fs=SM?44:54;setf(g,700,fs,HF);sp(g,.3);while(g.measureText(sc.title.toUpperCase()).width>1100&&fs>28){fs-=2;setf(g,700,fs,HF)}g.fillStyle='#eef1f3';g.fillText(sc.title.toUpperCase(),44,(SM?36:40)+fs*.9);sp(g,0);
+  g.font=`400 14px ${SF}`;g.fillStyle='#b9c2c8';const bl=para(g,blurb,44,SM?108:126,780,21,3);
+  if(!SM){let fx=44;const fy=126+bl*21+8;text(g,'FILTERS',fx,fy+14,`400 11px ${MF}`,'#8a959d',1);fx+=62;sc.filters.forEach(f=>{fx+=pill(g,f,fx,fy,col,hexA(col,.13),22,`400 11px ${MF}`)+8})}
   const sl=stubs[pi]||[];if(sl.length){let sy=134;text(g,'CONNECTIONS ACROSS THE PAGE BREAK',860,sy-18,`400 10px ${MF}`,'#8a959d',1.4);g.font=`400 10px ${MF}`;sl.slice(0,7).forEach(s=>{let q=s;while(g.measureText(q).width>535&&q.length>10)q=q.slice(0,-2);if(q!==s)q=q.trim()+'…';g.fillStyle=col;g.fillText(q,860,sy);sy+=16});if(sl.length>7){g.fillStyle='#8a959d';g.fillText('+ '+(sl.length-7)+' more',860,sy)}}
-    g.font=`400 11px ${MF}`;sp(g,1.5);const bw=g.measureText(t.name.toUpperCase()).width+20;rr(g,PW-44-bw,30,bw,22,4);g.strokeStyle=col;g.lineWidth=1;g.stroke();g.fillStyle=col;g.fillText(t.name.toUpperCase(),PW-44-bw+10,45);sp(g,0);
-  text(g,'PAGE '+(pi+1)+' OF '+np,PW-44,74,`400 11px ${MF}`,'#8a959d',1.5,'right');
-  g.fillStyle='rgba(255,255,255,.08)';g.fillRect(44,PH-44,PW-88,1);text(g,'STUDIO WORKFLOW BUILD · EXPORTED '+today().toUpperCase(),44,PH-20,`400 10px ${MF}`,'#6b767e',.8);text(g,'SOURCE: NOTION WORKFLOW DATABASE',PW-44,PH-20,`400 10px ${MF}`,'#6b767e',.8,'right');
+    if(!SM){g.font=`400 11px ${MF}`;sp(g,1.5);const bw=g.measureText(t.name.toUpperCase()).width+20;rr(g,PW-44-bw,30,bw,22,4);g.strokeStyle=col;g.lineWidth=1;g.stroke();g.fillStyle=col;g.fillText(t.name.toUpperCase(),PW-44-bw+10,45);sp(g,0)}
+  if(!SM||np>1)text(g,'PAGE '+(pi+1)+' OF '+np,PW-44,SM?44:74,`400 11px ${MF}`,'#8a959d',1.5,'right');
+  g.fillStyle='rgba(255,255,255,.08)';g.fillRect(44,PH-44,PW-88,1);text(g,SM?'STUDIO WORKFLOW BUILD · '+today().toUpperCase():'STUDIO WORKFLOW BUILD · EXPORTED '+today().toUpperCase(),44,PH-20,`400 10px ${MF}`,'#6b767e',.8);text(g,SM?'NOTION WORKFLOW DATABASE':'SOURCE: NOTION WORKFLOW DATABASE',PW-44,PH-20,`400 10px ${MF}`,'#6b767e',.8,'right');
   // panels
-  pg.panels.forEach(p=>{rr(g,p.x,L.top+pg.dy,p.w,pg.h,16);g.fillStyle=hexA(col,.06);g.fill();g.setLineDash([6,5]);g.strokeStyle=hexA(col,.55);g.lineWidth=1.5;g.stroke();g.setLineDash([]);{g.font=`700 10px ${MF}`;sp(g,1.6);let lb=p.label;while(g.measureText(lb).width>p.w-28&&lb.length>6)lb=lb.slice(0,-2);if(lb!==p.label)lb=lb.trim()+'…';sp(g,0);text(g,lb,p.x+16,L.top+pg.dy+25,`700 10px ${MF}`,col,1.6)}});
+  pg.panels.forEach(p=>{rr(g,p.x,L.top+pg.dy,p.w,pg.h,16);g.fillStyle=SM?'rgba(255,255,255,.03)':hexA(col,.06);g.fill();if(!SM){g.setLineDash([6,5]);g.strokeStyle=hexA(col,.55);g.lineWidth=1.5;g.stroke();g.setLineDash([])}{g.font=`700 10px ${MF}`;sp(g,1.6);let lb=p.label;while(g.measureText(lb).width>p.w-28&&lb.length>6)lb=lb.slice(0,-2);if(lb!==p.label)lb=lb.trim()+'…';sp(g,0);text(g,lb,p.x+16,L.top+pg.dy+25,`700 10px ${MF}`,col,1.6)}});
   // edges
   const here=id=>pos[id]&&pos[id].page===pi;g.lineWidth=1.5;g.strokeStyle='#c9d1d6';g.fillStyle='#c9d1d6';
   const arrow=(x,y,c)=>{g.fillStyle=c;g.beginPath();g.moveTo(x,y);g.lineTo(x-8,y-4);g.lineTo(x-8,y+4);g.closePath();g.fill()};
-  G.FR.forEach(([a,b])=>{if(!here(a)||!here(b))return;const A=pos[a],B=pos[b],x0=A.x+t.NW,y0=A.y+t.NH/2,x1=B.x,y1=B.y+t.NH/2;if(x1<=x0)return;g.strokeStyle='#c9d1d6';g.beginPath();g.moveTo(x0,y0);const m=(x1-x0)/2;g.bezierCurveTo(x0+m,y0,x1-m,y1,x1-8,y1);g.stroke();arrow(x1,y1,'#c9d1d6')});
+  if(SM)routeSimple(g,L,pi);else G.FR.forEach(([a,b])=>{if(!here(a)||!here(b))return;const A=pos[a],B=pos[b],x0=A.x+t.NW,y0=A.y+t.NH/2,x1=B.x,y1=B.y+t.NH/2;if(x1<=x0)return;g.strokeStyle='#c9d1d6';g.beginPath();g.moveTo(x0,y0);const m=(x1-x0)/2;g.bezierCurveTo(x0+m,y0,x1-m,y1,x1-8,y1);g.stroke();arrow(x1,y1,'#c9d1d6')});
   G.lps.forEach(([a,b],k)=>{if(!here(a)||!here(b))return;const A=pos[a],B=pos[b],xa=A.x+t.NW/2,xb=B.x+t.NW/2,ya=A.y,yb=B.y,top=Math.min(ya,yb)-12-(k%3)*6;g.strokeStyle=col;g.setLineDash([6,5]);g.beginPath();g.moveTo(xa,ya);g.lineTo(xa,top+8);g.quadraticCurveTo(xa,top,xa-8,top);g.lineTo(xb+8,top);g.quadraticCurveTo(xb,top,xb,top+8);g.lineTo(xb,yb-8);g.stroke();g.setLineDash([]);g.fillStyle=col;g.beginPath();g.moveTo(xb,yb);g.lineTo(xb-4,yb-8);g.lineTo(xb+4,yb-8);g.closePath();g.fill();text(g,'revise',xa-12,top-3,`400 9px ${MF}`,col,0,'right')});
   // nodes
+  const hasOut=new Set(G.FR.map(e=>e[0]));const allIds=Object.keys(pos);const cand=allIds.filter(i=>!hasOut.has(i)&&!/cross/i.test(G.stages[G.sOf(i)]||''));const finalId=(cand.length?cand:allIds).sort((a,b)=>G.sOf(b)-G.sOf(a)||G.lay[b]-G.lay[a])[0];
   const idx={};let n=0;L.pages.forEach(pp=>pp.panels.forEach(p=>p.cols.forEach(c=>c.forEach(i=>idx[i]=String(++n).padStart(2,'0')))));
-  for(const id of Object.keys(pos)){if(!here(id))continue;node(g,id,pos[id].x,pos[id].y,t,tier,col,tier==='mid'||tier==='simple'||tier==='detail'?await th(N[id].thumb&&D.thumbs?.[N[id].thumb]?N[id].thumb:null):null,idx[id])}
+  for(const id of Object.keys(pos)){if(!here(id))continue;if(SM){nodeSimple(g,id,pos[id].x,pos[id].y,t,col,idx[id],id===finalId);continue}node(g,id,pos[id].x,pos[id].y,t,tier,col,tier==='mid'||tier==='simple'||tier==='detail'?await th(N[id].thumb&&D.thumbs?.[N[id].thumb]?N[id].thumb:null):null,idx[id])}
   return c}
 async function exportFlow(tier,fmt){
   const sc=scope();if(!sc.ids.length){toast('There are no workflow steps to export with these filters.');return}await fonts();
   const L=layout(sc,tier),np=L.pages.length,G=L.G;
   const stubs={};const add=(p,s)=>(stubs[p]=stubs[p]||[]).push(s);
   G.FR.concat(G.lps).forEach(([a,b])=>{const pa=L.pos[a].page,pb=L.pos[b].page;if(pa!==pb){add(pa,`▸ ${N[a].name} → ${N[b].name} (page ${pb+1})`);add(pb,`◂ ${N[a].name} (page ${pa+1}) → ${N[b].name}`)}});
-  const nEdge=G.FR.length+G.lps.length,blurb=`${sc.lead}. ${sc.ids.length} workflow step${sc.ids.length>1?'s':''} across ${G.stages.length} stage${G.stages.length>1?'s':''}, with ${nEdge} connection${nEdge===1?'':'s'}${G.lps.length?` and ${G.lps.length} revision loop${G.lps.length>1?'s':''}`:''}${np>1?`. The chart runs across ${np} pages, breaking between stages`:''}.`;
+  const fcl=(()=>{if(tier!=='simple'||sc.dm!=='det')return'';const p=[];if(shSel)p.push('the '+shSel+' show');if(!STREAMS.every(x=>stSel.has(x)))p.push(STREAMS.filter(x=>stSel.has(x)).map(slabS).join(' and ')+' category');return p.length?' Filtered to '+p.join(' and ')+'.':''})();
+  const nEdge=G.FR.length+G.lps.length,blurb=`${sc.lead}. ${sc.ids.length} workflow step${sc.ids.length>1?'s':''} across ${G.stages.length} stage${G.stages.length>1?'s':''}, with ${nEdge} connection${nEdge===1?'':'s'}${G.lps.length?` and ${G.lps.length} revision loop${G.lps.length>1?'s':''}`:''}${np>1?`. The chart runs across ${np} pages, breaking between stages`:''}.`+fcl;
   const cv=[];for(let i=0;i<np;i++){prog(`Drawing page ${i+1} of ${np}`,.5*(i+1)/np);cv.push(await drawFlowPage(sc,L,i,np,tier,blurb,stubs));await yieldUI()}
   await finish(cv,fmt,`Studio-Workflow-${slug(sc.title)}-${tier}`);progOff()}
 window.__flowPages=(tier)=>{const sc=scope();return sc.ids.length?layout(sc,tier).pages.length:0};
