@@ -1615,7 +1615,7 @@ async function exportDeck(){
     cv.push(c);await yieldUI()}
   await finish(cv,'pdf','Studio-Workflow-Build-High-Level-Deck');progOff();toast('Deck exported: '+total+' pages.')}
 // ---------- flowchart
-const TIERS={simple:{NW:190,NH:160,gx:70,gy:40,name:'Simple'},mid:{NW:190,NH:172,gx:70,gy:30,name:'Mid-detail'},detail:{NW:250,NH:250,gx:62,gy:24,name:'Detailed'}};
+const TIERS={simple:{NW:190,NH:160,gx:90,gy:56,name:'Simple'},mid:{NW:190,NH:172,gx:70,gy:30,name:'Mid-detail'},detail:{NW:250,NH:250,gx:62,gy:24,name:'Detailed'}};
 const stK=s=>{const m=/^(\d+)([A-Z]?)/.exec(s||'');return m?[+m[1],m[2]]:[99,'']};
 const stCmp=(a,b)=>{const x=stK(a),y=stK(b);return x[0]-y[0]||x[1].localeCompare(y[1])};
 const stLab=s=>{const m=/^(\d+[A-Z]?)\s+([^—]*?)\s*(—.*)?$/.exec(s||'');return m?'STAGE '+m[1]+' · '+m[2].trim():String(s||'Other').replace(/\s*\(.*\)/,'').toUpperCase()};
@@ -1646,8 +1646,8 @@ function graph(ids){
   const q=ids.filter(i=>!indeg[i]);while(q.length){const u=q.shift();for(const v of out[u]){lay[v]=Math.max(lay[v],lay[u]+1);if(--indeg[v]===0)q.push(v)}}
   const lps=[];const ls=new Set();lp.forEach(([a,b])=>{const k=a+'\u0001'+b;if(!ls.has(k)){ls.add(k);lps.push([a,b])}});
   return{stages,sOf,FR,lps,lay}}
-function layout(sc,tier){
-  const t=TIERS[tier],{ids}=sc,G=graph(ids),top=262,botY=848,hdr=tier==='simple'?56:40,padB=12,rowsMax=Math.max(1,Math.floor((botY-top-hdr-padB+t.gy+.5)/(t.NH+t.gy)));
+function layout(sc,tier,opt){
+  const t=TIERS[tier],{ids}=sc,G=graph(ids),top=262,botY=848,hdr=tier==='simple'?76:40,padB=tier==='simple'?30:12,rowsMax=Math.max(1,Math.floor((botY-top-hdr-padB+t.gy+.5)/(t.NH+t.gy)));
   const panels=[];G.stages.forEach((s,k)=>{const nodes=ids.filter(i=>G.sOf(i)===k);const L={};nodes.forEach(i=>(L[G.lay[i]]=L[G.lay[i]]||[]).push(i));
     const lk=Object.keys(L).map(Number).sort((a,b)=>a-b),row={};
     lk.forEach((l,li)=>{L[l].sort((a,b)=>{const bc=x=>{const p=G.FR.filter(([u,v])=>v===x&&G.sOf(u)===k).map(([u])=>row[u]).filter(v=>v!=null);return p.length?p.reduce((s,v)=>s+v,0)/p.length:1e3};return bc(a)-bc(b)||ids.indexOf(a)-ids.indexOf(b)});L[l].forEach((x,i)=>row[x]=i)});
@@ -1659,7 +1659,9 @@ function layout(sc,tier){
   panels.forEach(p=>{let cols=p.cols.slice(),first=true;while(cols.length){if(!cur)newPage();const cap=Math.floor((usable-x-40+t.gx)/(t.NW+t.gx));let n;if(cap>=cols.length)n=cols.length;else if(cap>=2||(cap>=1&&!cur.panels.length))n=cap;else{newPage();continue}
     const chunk=cols.splice(0,Math.min(n,maxC));cur.panels.push({label:p.label+(first?'':' (CONT.)'),cols:chunk,x:40+x,w:pw(chunk.length)});x+=pw(chunk.length)+22;first=false}});
   const pos={},pgOf={};pages.forEach((pg,pi)=>{const rows=Math.max(...pg.panels.map(p=>Math.max(...p.cols.map(c=>c.length))));pg.rows=rows;pg.h=hdr+rows*t.NH+(rows-1)*t.gy+padB;pg.dy=Math.max(0,Math.floor((botY-top-pg.h)/2));
-    pg.panels.forEach(p=>{const pr=Math.max(...p.cols.map(c=>c.length));p.cols.forEach((c,ci)=>{c.forEach((id,ri)=>{pos[id]={x:p.x+20+ci*(t.NW+t.gx),y:top+pg.dy+hdr+(ri+(pr-c.length)/2)*(t.NH+t.gy),page:pi};pgOf[id]=pi})})})});
+    pg.panels.forEach(p=>{const pr=Math.max(...p.cols.map(c=>c.length));p.cols.forEach((c,ci)=>{c.forEach((id,ri)=>{pos[id]={x:p.x+20+ci*(t.NW+t.gx),y:top+pg.dy+hdr+(ri+(pr-c.length)/2)*(t.NH+t.gy),page:pi};pgOf[id]=pi})})});
+    if(tier==='simple'&&rows>1){const put=row=>pg.panels.forEach(p=>p.cols.forEach(c=>c.forEach(id=>pos[id].y=top+pg.dy+hdr+row[id]*(t.NH+t.gy))));
+      const row=optRows(pg,G,opt?r=>{put(r);return routeScore(planRoutes({pages,pos,G,t,top},pi,1))}:null);put(row);pg.panels.forEach(p=>p.cols.forEach(c=>c.sort((a,b)=>row[a]-row[b])))}});
   return{pages,pos,G,t,top}}
 function chipsRow(g,items,x,y,w,col,lh=22){let cx=x,cy=y;items.forEach(([s,hl])=>{g.font=`400 9.5px ${MF}`;const cw=g.measureText(s).width+14;if(cx+cw>x+w){cx=x;cy+=lh}rr(g,cx,cy,cw,17,4);if(hl){g.fillStyle=hexA(col,.16);g.fill()}g.strokeStyle=hl?col:'#3a434b';g.lineWidth=1;g.stroke();g.fillStyle=hl?'#eef1f3':'#aab4bb';g.fillText(s,cx+7,cy+12);cx+=cw+5});return cy+lh-y}
 const tierS=n=>{const a=(n.streams||[]).map(s=>{const m=/Tier\s+(\w+)/.exec(s);return m?m[1]:slabS(s).replace(/^.*?:\s*/,'')});const nu=a.filter(x=>/^\d/.test(x)),ot=a.filter(x=>!/^\d/.test(x));return [nu.length?'Tier '+nu.join(' · '):'',...ot].filter(Boolean).join(' · ')};
@@ -1668,32 +1670,118 @@ function shortDesc(n){let d=String(n.desc||'').split('\n').map(s=>s.trim()).filt
   s=s.split(/(?<=[a-z\)])\.\s/)[0].replace(/\.$/,'');let w=s.split(' ');if(w.length>9){const cl=s.split(/[,;:]\s/)[0].split(' ');w=cl.length>=4&&cl.length<=9?cl:w.slice(0,8)}
   while(w.length>3&&/^(and|or|the|a|an|to|of|for|with|in|on|from|into|by|via|then|that|which|so)$/i.test(w[w.length-1]))w.pop();
   s=w.join(' ').replace(/[\s,;:(\-–\/&+]+$/,'');return s.charAt(0).toUpperCase()+s.slice(1)}
-function nodeSimple(g,id,x,y,t,col,ix,last){const n=N[id];g.save();rr(g,x,y,t.NW,t.NH,6);g.fillStyle=last?col:'#101418';g.fill();
-  if(!last){g.strokeStyle='#2a3138';g.lineWidth=1;g.stroke();g.fillStyle='#fff';g.globalAlpha=.9;g.fillRect(x+3,y,t.NW-6,2);g.globalAlpha=1}
+function nodeSimple(g,id,x,y,t,col,ix,last,bar){const n=N[id];g.save();rr(g,x,y,t.NW,t.NH,6);g.fillStyle=last?col:'#101418';g.fill();
+  if(!last){g.strokeStyle='#2a3138';g.lineWidth=1;g.stroke();if(bar){g.fillStyle=bar;g.fillRect(x+3,y,t.NW-6,/^#3/.test(bar)&&bar==='#39424a'?2:3)}else{g.fillStyle='#fff';g.globalAlpha=.9;g.fillRect(x+3,y,t.NW-6,2);g.globalAlpha=1}}
   const nc=last?'#06101f':'#7d8790',tc=last?'#06101f':'#eef1f3',dc=last?'#0a2347':'#8a959d';
   text(g,ix,x+15,y+58,`700 56px ${HF}`,nc,-.5);
   g.font=`700 17px ${HF}`;sp(g,.4);const L=wrap(g,n.name.toUpperCase(),t.NW-30,3);g.fillStyle=tc;L.forEach((l,i)=>g.fillText(l,x+15,y+84+i*18));sp(g,0);
   const dy=y+84+(L.length-1)*18+20,mx=Math.max(1,Math.floor((y+t.NH-10-dy)/15)+1);g.font=`400 11.5px ${SF}`;g.fillStyle=dc;para(g,shortDesc(n),x+15,dy,t.NW-30,15,Math.min(3,mx));g.restore()}
 function rpoly(g,P,r){g.beginPath();g.moveTo(P[0][0],P[0][1]);for(let i=1;i<P.length-1;i++){const a=P[i-1],b=P[i],c=P[i+1],d1=Math.hypot(b[0]-a[0],b[1]-a[1]),d2=Math.hypot(c[0]-b[0],c[1]-b[1]),k=Math.min(r,d1/2,d2/2);g.lineTo(b[0]-(b[0]-a[0])/d1*k,b[1]-(b[1]-a[1])/d1*k);g.quadraticCurveTo(b[0],b[1],b[0]+(c[0]-b[0])/d2*k,b[1]+(c[1]-b[1])/d2*k)}g.lineTo(P[P.length-1][0],P[P.length-1][1]);g.stroke()}
-function routeSimple(g,L,pi){const {pos,G,t}=L,here=id=>pos[id]&&pos[id].page===pi,ids=Object.keys(pos).filter(here);
-  const xs=[...new Set(ids.map(i=>pos[i].x))].sort((a,b)=>a-b),gi=x=>xs.indexOf(x);
-  const E=G.FR.filter(([a,b])=>here(a)&&here(b)&&pos[a].x<pos[b].x);
-  const pf=(k,i,o)=>k===1?.5:(o?.22:.38)+.40*i/(k-1),outs={},ins={};
-  E.forEach(e=>{(outs[e[0]]=outs[e[0]]||[]).push(e);(ins[e[1]]=ins[e[1]]||[]).push(e)});
-  Object.values(outs).forEach(a=>a.sort((p,q)=>pos[p[1]].y-pos[q[1]].y||pos[p[1]].x-pos[q[1]].x));Object.values(ins).forEach(a=>a.sort((p,q)=>pos[p[0]].y-pos[q[0]].y));
-  const hit=(xa,xb,y,ex)=>ids.some(i=>!ex.includes(i)&&pos[i].x<Math.max(xa,xb)&&pos[i].x+t.NW>Math.min(xa,xb)&&y>pos[i].y-4&&y<pos[i].y+t.NH+4);
-  const lanes={},slotX=(g0,a,b)=>{const gs=xs[g0]+t.NW,ge=xs[g0+1],mid=(gs+ge)/2,sp=Math.min(11,(ge-gs-28)/3);const lo=Math.min(a,b)-6,hi=Math.max(a,b)+6,arr=lanes[g0]=lanes[g0]||[];
-    for(let k=0;k<9;k++){const off=(k%2?1:-1)*Math.ceil(k/2)*sp;if(!arr.some(z=>z.k===k&&z.lo<hi&&z.hi>lo)){arr.push({k,lo,hi});return mid+off}}return mid};
-  const paths=[];
-  E.forEach(e=>{const[a,b]=e,A=pos[a],B=pos[b],i=outs[a].indexOf(e),j=ins[b].indexOf(e),y0=A.y+t.NH*pf(outs[a].length,i,1),y1=B.y+t.NH*pf(ins[b].length,j,0),x0=A.x+t.NW,x1=B.x;
-    if(Math.abs(y0-y1)<1.5){paths.push({P:[[x0,y0],[x1,y1]]});return}
-    const gA=gi(A.x),gB=gi(B.x)-1;let g0=gA,mode='a';
-    if(gA!==gB){const lxA=(xs[gA]+t.NW+xs[gA+1])/2,lxB=(xs[gB]+t.NW+xs[gB+1])/2;if(hit(lxA,x1,y1,[b]))mode=!hit(x0,lxB,y0,[a])?'b':'a';if(mode==='b')g0=gB}
-    paths.push({a:y0,b:y1,g0,mode,x0,x1,y0,y1})});
-  paths.sort((p,q)=>Math.abs((q.b||0)-(q.a||0))-Math.abs((p.b||0)-(p.a||0)));
-  paths.forEach(p=>{if(p.P)return;const lx=slotX(p.g0,p.y0,p.y1);p.P=p.mode==='a'?[[p.x0,p.y0],[lx,p.y0],[lx,p.y1],[p.x1,p.y1]]:[[p.x0,p.y0],[lx,p.y0],[lx,p.y1],[p.x1,p.y1]]});
-  g.strokeStyle='#c9d1d6';g.fillStyle='#c9d1d6';g.lineWidth=1.7;g.lineJoin='round';
-  paths.forEach(p=>{const P=p.P;rpoly(g,P.slice(0,-1).concat([[P[P.length-1][0]-8,P[P.length-1][1]]]),6);const e=P[P.length-1];g.beginPath();g.moveTo(e[0],e[1]);g.lineTo(e[0]-9,e[1]-4.5);g.lineTo(e[0]-9,e[1]+4.5);g.closePath();g.fill()})}
+// ---- Simple tier: block placement and lane routing ----
+function segX(p,q){const o=(ax,ay,bx,by,cx,cy)=>Math.sign((bx-ax)*(cy-ay)-(by-ay)*(cx-ax));return o(p[0],p[1],p[2],p[3],q[0],q[1])*o(p[0],p[1],p[2],p[3],q[2],q[3])<0&&o(q[0],q[1],q[2],q[3],p[0],p[1])*o(q[0],q[1],q[2],q[3],p[2],p[3])<0}
+function optRows(pg,G,real){ // pick a row for every block on the page so that connections stay short, unobstructed and cross as little as possible
+  const R=pg.rows,cols=[];pg.panels.forEach(p=>p.cols.forEach(c=>cols.push(c)));const row={};cols.forEach(c=>c.forEach((id,i)=>row[id]=i));if(R<2)return row;
+  const cOf={};cols.forEach((c,k)=>c.forEach(id=>cOf[id]=k));const on=id=>id in cOf;
+  const FE=G.FR.filter(([a,b])=>on(a)&&on(b)&&a!==b),LE=G.lps.filter(([a,b])=>on(a)&&on(b)&&a!==b);
+  const perms=n=>{const out=[],cur=[],u=[];const rec=()=>{if(cur.length===n){out.push(cur.slice());return}for(let r=0;r<R;r++)if(!u[r]){u[r]=1;cur.push(r);rec();cur.pop();u[r]=0}};rec();return out};
+  const opts=cols.map(c=>perms(c.length));
+  const cost=()=>{let c=0;const occ=cols.map(cc=>{const o=[];cc.forEach(id=>o[row[id]]=1);return o}),segs=[];
+    const each=(a,b,w)=>{const ra=row[a],rb=row[b],ca=cOf[a],cb=cOf[b];c+=w*Math.abs(ra-rb)*1.2;let oa=0,ob=0;for(let k=Math.min(ca,cb)+1;k<Math.max(ca,cb);k++){if(occ[k][ra])oa++;if(occ[k][rb])ob++}c+=w*2.5*Math.min(oa,ob)};
+    FE.forEach(([a,b])=>{each(a,b,1);segs.push([cOf[a]+.45,row[a],cOf[b]-.45,row[b],a,b])});LE.forEach(([a,b])=>each(a,b,.5));
+    for(let i=0;i<segs.length;i++)for(let j=i+1;j<segs.length;j++){const p=segs[i],q=segs[j];if(p[4]===q[4]||p[5]===q[5]||p[4]===q[5]||p[5]===q[4])continue;if(segX(p,q))c+=3}
+    cols.forEach(cc=>cc.forEach(id=>c+=row[id]*.02));return c};
+  const set=(k,o)=>cols[k].forEach((id,i)=>row[id]=o[i]);
+  const total=opts.reduce((s,o)=>s*o.length,1);let best=Infinity,bestRow=null;
+  if(total<=4096){const rl=real&&total<=64;const rec=k=>{if(k===cols.length){const c=rl?real(row)+cost()*.01+cols.reduce((m,cc)=>m+cc.reduce((n,id)=>n+row[id]*.3,0),0):cost();if(c<best-1e-9){best=c;bestRow={...row}}return}opts[k].forEach(o=>{set(k,o);rec(k+1)})};rec(0)}
+  else{cols.forEach((c,k)=>set(k,opts[k][0]));best=cost();for(let sweep=0,ch=true;ch&&sweep<6;sweep++){ch=false;cols.forEach((c,k)=>{let bo=null;const keep=c.map(id=>row[id]);opts[k].forEach(o=>{set(k,o);const v=cost();if(v<best-1e-9){best=v;bo=o}});set(k,bo||keep);if(bo)ch=true})}bestRow={...row}}
+  return bestRow||row}
+function routeScore(paths){const s=routeStats(paths);let len=0;paths.forEach(p=>{for(let i=1;i<p.P.length;i++)len+=Math.abs(p.P[i][0]-p.P[i-1][0])+Math.abs(p.P[i][1]-p.P[i-1][1])});return s.solidCrossings*10+(s.crossings-s.solidCrossings)*5+s.bends+len/100+s.failed*100}
+function planRoutes(L,pi,passes=2){
+  const {pos,G,t,pages,top}=L,pg=pages[pi],CS=8,W=Math.ceil(PW/CS)+1,H=Math.ceil(PH/CS)+1,NC=W*H;
+  const here=id=>pos[id]&&pos[id].page===pi,ids=Object.keys(pos).filter(here);
+  const pl=pg.panels,lp=pl[pl.length-1],bx0=pl[0].x+6,bx1=lp.x+lp.w-6,by0=top+pg.dy+36,by1=top+pg.dy+pg.h-4;
+  const obs=new Uint8Array(NC);for(let r=0;r<H;r++)for(let c=0;c<W;c++){const x=c*CS,y=r*CS;if(x<bx0||x>bx1||y<by0||y>by1)obs[r*W+c]=1}
+  ids.forEach(i=>{const p=pos[i];for(let r=Math.ceil((p.y-9)/CS);r*CS<p.y+t.NH+9;r++)for(let c=Math.ceil((p.x-11)/CS);c*CS<p.x+t.NW+11;c++)if(r>=0&&c>=0&&r<H&&c<W)obs[r*W+c]=1});
+  const hO=new Uint8Array(NC),vO=new Uint8Array(NC),DX=[1,0,-1,0],DY=[0,1,0,-1],used={};
+  const ports=(id,side,out)=>{const p=pos[id],u=used[id+side]||[],res=[];
+    if(side==='R'||side==='L'){const c=side==='R'?Math.ceil((p.x+t.NW+14)/CS):Math.floor((p.x-14)/CS),mid=(p.y+t.NH/2)/CS;
+      for(let r=Math.ceil((p.y+24)/CS);r*CS<=p.y+t.NH-24;r++)res.push({c,r,d:0,s:r,px:side==='R'?p.x+t.NW:p.x,py:r*CS,pen:.4*Math.abs(r-mid)})}
+    else{const r=side==='T'?Math.floor((p.y-14)/CS):Math.ceil((p.y+t.NH+14)/CS),mid=(p.x+t.NW/2)/CS;
+      for(let c=Math.ceil((p.x+32)/CS);c*CS<=p.x+t.NW-32;c++)res.push({c,r,d:(side==='T')===out?3:1,s:c,px:c*CS,py:side==='T'?p.y:p.y+t.NH,pen:.25*Math.abs(c-mid)})}
+    const ok=res.filter(q=>!obs[q.r*W+q.c]),free=ok.filter(q=>!u.some(v=>Math.abs(v-q.s)<2));return(free.length?free:ok).map(q=>({...q,key:id+side}))};
+  const route=(starts,goals,xc)=>{if(!starts.length||!goals.length)return null;
+    const gm=new Map();let c0=1e9,c1=-1,r0=1e9,r1=-1;goals.forEach(q=>{for(let d=0;d<4;d++){const k=(q.r*W+q.c)*4+d,pen=q.pen+(d===q.d?0:8),o=gm.get(k);if(!o||pen<o.pen)gm.set(k,{...q,pen})}c0=Math.min(c0,q.c);c1=Math.max(c1,q.c);r0=Math.min(r0,q.r);r1=Math.max(r1,q.r)});
+    const hh=(c,r)=>(c<c0?c0-c:c>c1?c-c1:0)+(r<r0?r0-r:r>r1?r-r1:0);
+    const dist=new Float32Array(NC*4).fill(Infinity),prev=new Int32Array(NC*4).fill(-1),sm=new Map(),hp=[];
+    const push=(f,k)=>{hp.push([f,k]);let i=hp.length-1;while(i>0){const q=(i-1)>>1;if(hp[q][0]<=hp[i][0])break;const x=hp[q];hp[q]=hp[i];hp[i]=x;i=q}};
+    const pop=()=>{const tp=hp[0],l=hp.pop();if(hp.length){hp[0]=l;let i=0;for(;;){let m=i;const a=2*i+1,b=a+1;if(a<hp.length&&hp[a][0]<hp[m][0])m=a;if(b<hp.length&&hp[b][0]<hp[m][0])m=b;if(m===i)break;const x=hp[m];hp[m]=hp[i];hp[i]=x;i=m}}return tp};
+    starts.forEach(q=>{const k=(q.r*W+q.c)*4+q.d;if(q.pen<dist[k]){dist[k]=q.pen;sm.set(k,q);push(q.pen+hh(q.c,q.r),k)}});let it=0;
+    while(hp.length&&it++<900000){const [f,k]=pop();
+      if(k<0){const gk=-k-1,cells=[];let q=gk,root=gk;while(q>=0){const cl=q>>2;cells.push([cl%W,(cl-cl%W)/W]);root=q;q=prev[q]}cells.reverse();return{cells,s:sm.get(root),g:gm.get(gk),cost:f}}
+      const d=k&3,cell=k>>2,c=cell%W,r=(cell-c)/W;if(f>dist[k]+hh(c,r)+1e-3)continue;
+      if(gm.has(k))push(dist[k]+gm.get(k).pen,-(k+1));
+      for(let nd=0;nd<4;nd++){if(((nd+2)&3)===d)continue;const nc=c+DX[nd],nr=r+DY[nd];if(nc<0||nr<0||nc>=W||nr>=H)continue;const nk=nr*W+nc;if(obs[nk])continue;
+        let cost=1+(nd!==d?8:0);
+        if(!(nd&1)){if(hO[nk])cost+=400;else if(vO[nk])cost+=xc;if(hO[nk-W])cost+=3;if(hO[nk+W])cost+=3}
+        else{if(vO[nk])cost+=400;else if(hO[nk])cost+=xc;if(vO[nk-1])cost+=3;if(vO[nk+1])cost+=3}
+        const nn=nk*4+nd,v=dist[k]+cost;if(v<dist[nn]){dist[nn]=v;prev[nn]=k;push(v+hh(nc,nr),nn)}}}
+    return null};
+  const mark=(res,v)=>{const C=res.cells,m=(c,r,hz)=>{(hz?hO:vO)[r*W+c]+=v};m(C[0][0],C[0][1],!(res.s.d&1));const e=C[C.length-1];m(e[0],e[1],!(res.g.d&1));
+    for(let i=1;i<C.length;i++){const hz=C[i-1][1]===C[i][1];m(C[i-1][0],C[i-1][1],hz);m(C[i][0],C[i][1],hz)}};
+  const items=[];G.FR.forEach(([a,b])=>{if(here(a)&&here(b)&&a!==b)items.push({a,b,loop:false})});
+  items.sort((p,q)=>{const d=o=>Math.abs(pos[o.a].x-pos[o.b].x)+Math.abs(pos[o.a].y-pos[o.b].y);return d(q)-d(p)});
+  G.lps.forEach(([a,b])=>{if(here(a)&&here(b)&&a!==b)items.push({a,b,loop:true})});
+  const run=o=>{const fw=!o.loop&&pos[o.a].x<pos[o.b].x;
+    const S=fw?ports(o.a,'R',true):[...ports(o.a,'T',true),...ports(o.a,'B',true)],T=fw?ports(o.b,'L',false):[...ports(o.b,'T',false),...ports(o.b,'B',false)];
+    const res=route(S,T,o.loop?25:40);o.res=res;if(res){mark(res,1);[res.s,res.g].forEach(q=>(used[q.key]=used[q.key]||[]).push(q.s))}};
+  const undo=o=>{if(!o.res)return;mark(o.res,-1);[o.res.s,o.res.g].forEach(q=>{const u=used[q.key],i=u.indexOf(q.s);if(i>=0)u.splice(i,1)});o.res=null};
+  items.forEach(run);for(let pass=0;pass<passes;pass++)items.forEach(o=>{undo(o);run(o)});
+  const redo=(o,res)=>{o.res=res;if(res){mark(res,1);[res.s,res.g].forEach(q=>(used[q.key]=used[q.key]||[]).push(q.s))}};
+  const build=()=>items.map(toPath);
+  // crossing pairs: take both lines out and put them back in the other order; keep it only if the page as a whole reads better
+  if(passes>0)for(let round=0;round<3;round++){const cur=build(),S=routeSegs(cur),pairs=new Set();
+    S.forEach(s=>{if(!s.h)return;const y=s.a[1],xa=Math.min(s.a[0],s.b[0]),xb=Math.max(s.a[0],s.b[0]);S.forEach(v=>{if(v.h||v.pi===s.pi)return;const X=v.a[0],ya=Math.min(v.a[1],v.b[1]),yb=Math.max(v.a[1],v.b[1]);if(X>xa&&X<xb&&y>ya&&y<yb)pairs.add(Math.min(s.pi,v.pi)+','+Math.max(s.pi,v.pi))})});
+    if(!pairs.size)break;let improved=false;
+    for(const pr of pairs){const [i,j]=pr.split(',').map(Number),A=items[i],B=items[j];if(!A.res||!B.res)continue;const base=routeScore(build()),ra=A.res,rb=B.res;let best=base,keep=null;
+      for(const ord of [[B,A],[A,B]]){undo(A);undo(B);run(ord[0]);run(ord[1]);const sc=routeScore(build());if(sc<best-1e-6){best=sc;keep=[A.res,B.res]}}
+      undo(A);undo(B);if(keep){redo(A,keep[0]);redo(B,keep[1]);improved=true}else{redo(A,ra);redo(B,rb)}}
+    if(!improved)break}
+  const paths=items.map(toPath);return paths;
+  function toPath(o){let pts;if(o.res){const{cells,s,g}=o.res;pts=[[s.px,s.py],...cells.map(([c,r])=>[c*CS,r*CS]),[g.px,g.py]]}
+    else{const A=pos[o.a],B=pos[o.b];if(o.loop){const yt=Math.min(A.y,B.y)-12;pts=[[A.x+t.NW/2,A.y],[A.x+t.NW/2,yt],[B.x+t.NW/2,yt],[B.x+t.NW/2,B.y]]}else{const mx=(A.x+t.NW+B.x)/2;pts=[[A.x+t.NW,A.y+t.NH/2],[mx,A.y+t.NH/2],[mx,B.y+t.NH/2],[B.x,B.y+t.NH/2]]}}
+    const Q=[];pts.forEach(p=>{const n=Q.length;if(n&&Q[n-1][0]===p[0]&&Q[n-1][1]===p[1])return;if(n>1&&((Q[n-2][0]===Q[n-1][0]&&Q[n-1][0]===p[0])||(Q[n-2][1]===Q[n-1][1]&&Q[n-1][1]===p[1])))Q[n-1]=p;else Q.push(p)});return{P:Q,loop:o.loop,ok:!!o.res,a:o.a,b:o.b}}}
+function routeSegs(paths){const segs=[];paths.forEach((p,pi)=>{for(let i=0;i<p.P.length-1;i++){const a=p.P[i],b=p.P[i+1];segs.push({pi,i,h:a[1]===b[1],a,b,loop:p.loop})}});return segs}
+function routeStats(paths){const S=routeSegs(paths);let x=0,xs=0,bends=0;paths.forEach(p=>bends+=p.P.length-2);S.forEach(s=>{if(!s.h)return;const y=s.a[1],xa=Math.min(s.a[0],s.b[0]),xb=Math.max(s.a[0],s.b[0]);S.forEach(v=>{if(v.h||v.pi===s.pi)return;const X=v.a[0],ya=Math.min(v.a[1],v.b[1]),yb=Math.max(v.a[1],v.b[1]);if(X>xa&&X<xb&&y>ya&&y<yb){x++;if(!s.loop&&!v.loop)xs++}})});return{lines:paths.length,crossings:x,solidCrossings:xs,bends,failed:paths.filter(p=>!p.ok).length}}
+function shadeLines(paths){ // two shades: lines that cross, run side by side or meet at the same block edge get different shades wherever possible
+  const idx=[];paths.forEach((p,i)=>{if(!p.loop)idx.push(i)});const n=idx.length,Wt=Array.from({length:n},()=>new Float32Array(n));
+  const segs=idx.map(i=>{const P=paths[i].P,a=[];for(let k=0;k<P.length-1;k++)a.push([P[k],P[k+1]]);return a}),len=segs.map(a=>a.reduce((t,[p,q])=>t+Math.abs(q[0]-p[0])+Math.abs(q[1]-p[1]),0));
+  const ov=(a0,a1,b0,b1)=>Math.min(Math.max(a0,a1),Math.max(b0,b1))-Math.max(Math.min(a0,a1),Math.min(b0,b1));
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){const A=paths[idx[i]],B=paths[idx[j]];let w=(A.a===B.a||A.b===B.b)?2:0;segs[i].forEach(([a,b])=>segs[j].forEach(([c,d])=>{const h1=a[1]===b[1],h2=c[1]===d[1];
+      if(h1===h2){const k=h1?1:0,dist=Math.abs(a[k]-c[k]),o=h1?ov(a[0],b[0],c[0],d[0]):ov(a[1],b[1],c[1],d[1]);if(dist<=26&&o>4)w+=1+o/40}
+      else{const H=h1?[a,b]:[c,d],V=h1?[c,d]:[a,b],x=V[0][0],y=H[0][1];if(x>=Math.min(H[0][0],H[1][0])-3&&x<=Math.max(H[0][0],H[1][0])+3&&y>=Math.min(V[0][1],V[1][1])-3&&y<=Math.max(V[0][1],V[1][1])+3)w+=4}}));
+    Wt[i][j]=Wt[j][i]=w}
+  const sh=new Int8Array(n).fill(-1),deg=i=>Wt[i].reduce((t,v)=>t+v,0),order=[...Array(n).keys()].sort((a,b)=>deg(b)-deg(a)||len[b]-len[a]);
+  order.forEach(i=>{let c=[0,0];for(let j=0;j<n;j++)if(sh[j]>=0)c[sh[j]]+=Wt[i][j];sh[i]=c[0]<=c[1]?0:1});
+  for(let it=0,ch=true;ch&&it<20;it++){ch=false;for(let i=0;i<n;i++){let c=[0,0];for(let j=0;j<n;j++)if(j!==i)c[sh[j]]+=Wt[i][j];if(c[sh[i]]>c[1-sh[i]]+1e-6){sh[i]=1-sh[i];ch=true}}}
+  // connected groups: the shade carrying more line length becomes the light one; lines with no neighbours stay light
+  const comp=new Int32Array(n).fill(-1);let nc=0;for(let i=0;i<n;i++){if(comp[i]>=0)continue;const st=[i];comp[i]=nc;while(st.length){const u=st.pop();for(let v=0;v<n;v++)if(Wt[u][v]>0&&comp[v]<0){comp[v]=nc;st.push(v)}}nc++}
+  for(let c=0;c<nc;c++){const L=[0,0];let m=0;for(let i=0;i<n;i++)if(comp[i]===c){L[sh[i]]+=len[i];m++}if(m===1||L[1]>L[0])for(let i=0;i<n;i++)if(comp[i]===c)sh[i]=m===1?0:1-sh[i]}
+  const out={};idx.forEach((pi,k)=>out[pi]=sh[k]);return out}
+function drawRoutes(g,paths,col,lineCol){const S=routeSegs(paths),HR=4;
+  paths.forEach((p,pi)=>{p.hops={};if(p.loop)return;S.forEach(s=>{if(s.pi!==pi||!s.h)return;const y=s.a[1],xa=Math.min(s.a[0],s.b[0]),xb=Math.max(s.a[0],s.b[0]),xs=[];
+    S.forEach(v=>{if(v.h||v.pi===pi||v.loop)return;const X=v.a[0],ya=Math.min(v.a[1],v.b[1]),yb=Math.max(v.a[1],v.b[1]);if(X>xa+HR+6&&X<xb-HR-6&&y>ya&&y<yb)xs.push(X)});if(xs.length)p.hops[s.i]=xs.sort((m,n)=>m-n)})});
+  const stroke=p=>{const P=p.P,n=P.length,e=P[n-1],f=P[n-2],dl=Math.hypot(e[0]-f[0],e[1]-f[1])||1,ux=(e[0]-f[0])/dl,uy=(e[1]-f[1])/dl,Q=P.slice(0,-1).concat([[e[0]-ux*8,e[1]-uy*8]]);
+    g.beginPath();g.moveTo(Q[0][0],Q[0][1]);
+    for(let i=0;i<n-1;i++){const a=Q[i],b=Q[i+1],len=Math.hypot(b[0]-a[0],b[1]-a[1])||1;let k=0,nx=null;
+      if(i<n-2){const c=Q[i+2],l2=Math.hypot(c[0]-b[0],c[1]-b[1])||1;k=Math.min(5,len/2,l2/2);nx=[b[0]+(c[0]-b[0])/l2*k,b[1]+(c[1]-b[1])/l2*k]}
+      const hx=p.hops[i];if(hx){const dir=b[0]>a[0]?1:-1;(dir>0?hx:hx.slice().reverse()).forEach(x=>{g.lineTo(x-dir*HR,a[1]);if(dir>0)g.arc(x,a[1],HR,Math.PI,0,false);else g.arc(x,a[1],HR,0,Math.PI,true)})}
+      g.lineTo(b[0]-(b[0]-a[0])/len*k,b[1]-(b[1]-a[1])/len*k);if(nx)g.quadraticCurveTo(b[0],b[1],nx[0],nx[1])}
+    g.stroke();g.save();g.setLineDash([]);g.beginPath();g.moveTo(e[0],e[1]);g.lineTo(e[0]-ux*9-uy*4.5,e[1]-uy*9+ux*4.5);g.lineTo(e[0]-ux*9+uy*4.5,e[1]-uy*9-ux*4.5);g.closePath();g.fill();g.restore()};
+  g.save();g.lineJoin='round';g.lineCap='butt';
+  g.lineWidth=1.7;const NEU=lineCol?'#8d98a0':'#c9d1d6',sol=paths.filter(p=>!p.loop).map(p=>[p,(lineCol&&lineCol(p))||NEU]);sol.sort((m,n)=>(m[1]!==NEU)-(n[1]!==NEU));sol.forEach(([p,c])=>{g.strokeStyle=c;g.fillStyle=c;stroke(p)});
+  g.strokeStyle=col;g.fillStyle=col;g.lineWidth=1.5;g.setLineDash([6,5]);paths.filter(p=>p.loop).forEach(p=>{stroke(p);let bs=null,bl=0;for(let i=0;i<p.P.length-1;i++){const a=p.P[i],b=p.P[i+1];if(a[1]===b[1]&&Math.abs(b[0]-a[0])>bl){bl=Math.abs(b[0]-a[0]);bs=[a,b]}}
+    if(bs&&bl>=56){g.save();g.setLineDash([]);text(g,'revise',(bs[0][0]+bs[1][0])/2,bs[0][1]-5,`400 9px ${MF}`,col,0,'center');g.restore()}});
+  g.setLineDash([]);g.restore()}
 function node(g,id,x,y,t,tier,col,im,ix){const n=N[id];g.save();rr(g,x,y,t.NW,t.NH,10);g.fillStyle='#101418';g.fill();g.save();rr(g,x,y,t.NW,t.NH,10);g.clip();
   const title=n.name.toUpperCase();
   if(tier==='simple'){cover(g,im,x,y,62,t.NH,.85);setf(g,700,14,HF);sp(g,.3);const L=wrap(g,title,t.NW-62-24,3);text(g,ix,x+74,y+t.NH/2-L.length*8-2,`700 11px ${MF}`,col,1);g.font=`700 15px ${HF}`;g.fillStyle='#eef1f3';sp(g,.3);L.forEach((l,i)=>g.fillText(l,x+74,y+t.NH/2-L.length*8+16+i*16-2));sp(g,0)}
@@ -1721,22 +1809,30 @@ async function drawFlowPage(sc,L,pi,np,tier,blurb,stubs){
   // edges
   const here=id=>pos[id]&&pos[id].page===pi;g.lineWidth=1.5;g.strokeStyle='#c9d1d6';g.fillStyle='#c9d1d6';
   const arrow=(x,y,c)=>{g.fillStyle=c;g.beginPath();g.moveTo(x,y);g.lineTo(x-8,y-4);g.lineTo(x-8,y+4);g.closePath();g.fill()};
-  if(SM)routeSimple(g,L,pi);else G.FR.forEach(([a,b])=>{if(!here(a)||!here(b))return;const A=pos[a],B=pos[b],x0=A.x+t.NW,y0=A.y+t.NH/2,x1=B.x,y1=B.y+t.NH/2;if(x1<=x0)return;g.strokeStyle='#c9d1d6';g.beginPath();g.moveTo(x0,y0);const m=(x1-x0)/2;g.bezierCurveTo(x0+m,y0,x1-m,y1,x1-8,y1);g.stroke();arrow(x1,y1,'#c9d1d6')});
-  G.lps.forEach(([a,b],k)=>{if(!here(a)||!here(b))return;const A=pos[a],B=pos[b],xa=A.x+t.NW/2,xb=B.x+t.NW/2,ya=A.y,yb=B.y,top=Math.min(ya,yb)-12-(k%3)*6;g.strokeStyle=col;g.setLineDash([6,5]);g.beginPath();g.moveTo(xa,ya);g.lineTo(xa,top+8);g.quadraticCurveTo(xa,top,xa-8,top);g.lineTo(xb+8,top);g.quadraticCurveTo(xb,top,xb,top+8);g.lineTo(xb,yb-8);g.stroke();g.setLineDash([]);g.fillStyle=col;g.beginPath();g.moveTo(xb,yb);g.lineTo(xb-4,yb-8);g.lineTo(xb+4,yb-8);g.closePath();g.fill();text(g,'revise',xa-12,top-3,`400 9px ${MF}`,col,0,'right')});
+  let barOf=null;
+  if(SM){const paths=planRoutes(L,pi),st=window.__flowStyle||'duo';let lineCol=null;
+    if(st==='calm'){lineCol=()=>null;barOf=()=>'#39424a'}
+    else if(st==='duo'){const sh=shadeLines(paths),LT=window.__duo?window.__duo[0]:'#cdd5db',DK=window.__duo?window.__duo[1]:'#5f6a73';paths.forEach((p,i)=>p.shade=sh[i]);paths.sort((a,b)=>(b.shade||0)-(a.shade||0));lineCol=p=>p.shade?DK:LT;barOf=()=>'#39424a'}
+    else if(st==='source'||st==='select'){const PAL=['#f2c94c','#2ec4b6','#ff8fa3','#b39dff','#ff9f5a','#7bd88f','#e58cff','#5ad1ff'],on=p=>!p.loop&&(st==='source'||p.P.length>2),cm={};
+      Object.keys(pos).filter(here).sort((a,b)=>pos[a].x-pos[b].x||pos[a].y-pos[b].y).forEach(id=>{if(paths.some(p=>p.a===id&&on(p)))cm[id]=PAL[Object.keys(cm).length%PAL.length]});
+      lineCol=p=>on(p)?cm[p.a]:null;barOf=id=>cm[id]||'#39424a'}
+    drawRoutes(g,paths,col,lineCol)}else G.FR.forEach(([a,b])=>{if(!here(a)||!here(b))return;const A=pos[a],B=pos[b],x0=A.x+t.NW,y0=A.y+t.NH/2,x1=B.x,y1=B.y+t.NH/2;if(x1<=x0)return;g.strokeStyle='#c9d1d6';g.beginPath();g.moveTo(x0,y0);const m=(x1-x0)/2;g.bezierCurveTo(x0+m,y0,x1-m,y1,x1-8,y1);g.stroke();arrow(x1,y1,'#c9d1d6')});
+  if(!SM)G.lps.forEach(([a,b],k)=>{if(!here(a)||!here(b))return;const A=pos[a],B=pos[b],xa=A.x+t.NW/2,xb=B.x+t.NW/2,ya=A.y,yb=B.y,top=Math.min(ya,yb)-12-(k%3)*6;g.strokeStyle=col;g.setLineDash([6,5]);g.beginPath();g.moveTo(xa,ya);g.lineTo(xa,top+8);g.quadraticCurveTo(xa,top,xa-8,top);g.lineTo(xb+8,top);g.quadraticCurveTo(xb,top,xb,top+8);g.lineTo(xb,yb-8);g.stroke();g.setLineDash([]);g.fillStyle=col;g.beginPath();g.moveTo(xb,yb);g.lineTo(xb-4,yb-8);g.lineTo(xb+4,yb-8);g.closePath();g.fill();text(g,'revise',xa-12,top-3,`400 9px ${MF}`,col,0,'right')});
   // nodes
   const hasOut=new Set(G.FR.map(e=>e[0]));const allIds=Object.keys(pos);const cand=allIds.filter(i=>!hasOut.has(i)&&!/cross/i.test(G.stages[G.sOf(i)]||''));const finalId=(cand.length?cand:allIds).sort((a,b)=>G.sOf(b)-G.sOf(a)||G.lay[b]-G.lay[a])[0];
   const idx={};let n=0;L.pages.forEach(pp=>pp.panels.forEach(p=>p.cols.forEach(c=>c.forEach(i=>idx[i]=String(++n).padStart(2,'0')))));
-  for(const id of Object.keys(pos)){if(!here(id))continue;if(SM){nodeSimple(g,id,pos[id].x,pos[id].y,t,col,idx[id],id===finalId);continue}node(g,id,pos[id].x,pos[id].y,t,tier,col,tier==='mid'||tier==='simple'||tier==='detail'?await th(N[id].thumb&&D.thumbs?.[N[id].thumb]?N[id].thumb:null):null,idx[id])}
+  for(const id of Object.keys(pos)){if(!here(id))continue;if(SM){nodeSimple(g,id,pos[id].x,pos[id].y,t,col,idx[id],id===finalId,barOf&&barOf(id));continue}node(g,id,pos[id].x,pos[id].y,t,tier,col,tier==='mid'||tier==='simple'||tier==='detail'?await th(N[id].thumb&&D.thumbs?.[N[id].thumb]?N[id].thumb:null):null,idx[id])}
   return c}
 async function exportFlow(tier,fmt){
   const sc=scope();if(!sc.ids.length){toast('There are no workflow steps to export with these filters.');return}await fonts();
-  const L=layout(sc,tier),np=L.pages.length,G=L.G;
+  const L=layout(sc,tier,true),np=L.pages.length,G=L.G;
   const stubs={};const add=(p,s)=>(stubs[p]=stubs[p]||[]).push(s);
   G.FR.concat(G.lps).forEach(([a,b])=>{const pa=L.pos[a].page,pb=L.pos[b].page;if(pa!==pb){add(pa,`▸ ${N[a].name} → ${N[b].name} (page ${pb+1})`);add(pb,`◂ ${N[a].name} (page ${pa+1}) → ${N[b].name}`)}});
   const fcl=(()=>{if(tier!=='simple'||sc.dm!=='det')return'';const p=[];if(shSel)p.push('the '+shSel+' show');if(!STREAMS.every(x=>stSel.has(x)))p.push(STREAMS.filter(x=>stSel.has(x)).map(slabS).join(' and ')+' category');return p.length?' Filtered to '+p.join(' and ')+'.':''})();
   const nEdge=G.FR.length+G.lps.length,blurb=`${sc.lead}. ${sc.ids.length} workflow step${sc.ids.length>1?'s':''} across ${G.stages.length} stage${G.stages.length>1?'s':''}, with ${nEdge} connection${nEdge===1?'':'s'}${G.lps.length?` and ${G.lps.length} revision loop${G.lps.length>1?'s':''}`:''}${np>1?`. The chart runs across ${np} pages, breaking between stages`:''}.`+fcl;
   const cv=[];for(let i=0;i<np;i++){prog(`Drawing page ${i+1} of ${np}`,.5*(i+1)/np);cv.push(await drawFlowPage(sc,L,i,np,tier,blurb,stubs));await yieldUI()}
   await finish(cv,fmt,`Studio-Workflow-${slug(sc.title)}-${tier}`);progOff()}
+window.__flowStats=()=>{const sc=scope(),t0=performance.now(),L=layout(sc,'simple',true),r=L.pages.map((_,i)=>routeStats(planRoutes(L,i)));return{ms:Math.round(performance.now()-t0),pages:r}};
 window.__flowPages=(tier)=>{const sc=scope();return sc.ids.length?layout(sc,tier).pages.length:0};
 // ---------- dialog
 function openDialog(){
