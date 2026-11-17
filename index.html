@@ -1570,12 +1570,12 @@ window.__gate=()=>{body.dataset.mode='pick';const p=$('pick');setTimeout(()=>p.q
 document.querySelectorAll('#pick .tpc').forEach(c=>c.onclick=()=>{mode='';setMode(c.dataset.m)});
 // ---------- High Level deck
 const CH=VERTS.map(v=>v[0]);let pages=[],hi=0;
-function buildPages(){pages=[];if(window.__toyOK&&window.__toyOK())pages.push({t:'toy',v:'toy'});CH.forEach(v=>{pages.push({t:'c',v});msList(v).forEach(m=>pages.push({t:'m',v,m}))})}
+function buildPages(){pages=[];(window.__toyParts?window.__toyParts():[]).forEach(n=>pages.push({t:'toy',v:'toy',part:n}));CH.forEach(v=>{pages.push({t:'c',v});msList(v).forEach(m=>pages.push({t:'m',v,m}))})}
 function drawHL(){
   if(!pages.length)buildPages();
   const hl=$('hl');hl.innerHTML='<div class="tb"><div class="tt">Studio Workflow Build</div><nav id="hnav" aria-label="Chapters"></nav><span id="hsw"></span></div><div id="hlb" aria-live="polite"></div><div class="hft"><button class="hn" id="hpv"></button><div class="hprog" id="hpg"></div><button class="hn pr" id="hnx"></button></div>';
   $('hsw').appendChild(vsw);
-  $('hnav').innerHTML=(pages[0]&&pages[0].t==='toy'?'<button class="hc" data-v="toy" style="--c:#3b8cff" data-tip="TOY Part 1 readiness for Production Simulation"><i></i>TOY</button>':'')+VERTS.map((v,i)=>`<button class="hc" data-v="${v[0]}" style="--c:${v[2]}"><i></i>${String(i+1).padStart(2,'0')} ${esc(v[1].replace(' Content',''))}</button>`).join('');
+  $('hnav').innerHTML=(pages[0]&&pages[0].t==='toy'?'<button class="hc" data-v="toy" style="--c:#3b8cff" data-tip="TOY readiness for Production Simulation: Part 1, then Part 2"><i></i>TOY</button>':'')+VERTS.map((v,i)=>`<button class="hc" data-v="${v[0]}" style="--c:${v[2]}"><i></i>${String(i+1).padStart(2,'0')} ${esc(v[1].replace(' Content',''))}</button>`).join('');
   $('hnav').onclick=e=>{const b=e.target.closest('.hc');if(b){hi=pages.findIndex(p=>(p.t==='c'||p.t==='toy')&&p.v===b.dataset.v);showHL()}};
   $('hpv').onclick=()=>step(-1);$('hnx').onclick=()=>step(1);
   hi=0;
@@ -1588,7 +1588,7 @@ function showHL(){
   const p=pages[hi],v=p.v,ci=CH.indexOf(v),col=p.t==='toy'?'#3b8cff':VC[v],hl=$('hl');hl.style.setProperty('--tc',col);
   document.querySelectorAll('#hnav .hc').forEach(b=>b.setAttribute('aria-current',b.dataset.v===v));
   const list=msList(v),b=$('hlb');
-  if(p.t==='toy'){b.className='toy';b.style.display='block';b.style.alignItems='';window.__toyDraw(b)}
+  if(p.t==='toy'){b.className='toy';b.style.display='block';b.style.alignItems='';window.__toyDraw(b,p.part)}
   else if(p.t==='c'){
     const first=list.find(m=>m.start),act=list.filter(m=>m.status==='In progress').length;
     const shown=list.slice(0,7),more=list.length-shown.length;
@@ -1607,13 +1607,13 @@ function showHL(){
       <div class="hrm"><div class="hk">WHERE THIS SITS IN ${esc(vname(v).toUpperCase())}</div>${a>0?`<div style="font-size:12px;color:var(--mute);padding-bottom:4px">${a} earlier milestone${a>1?'s':''}</div>`:''}${w.map(x=>`<div class="hrr${x===m?' cur':''}"><i class="${x.status==='In progress'?'':'nn'}"></i><div><b>${esc(x.name)}</b><span>${esc(rng(x.start,x.end))}${x===m?' · you are here':''}</span></div></div>`).join('')}${a+w.length<list.length?`<div style="font-size:12px;color:var(--mute);padding-top:6px">+ ${list.length-a-w.length} later milestone${list.length-a-w.length>1?'s':''}</div>`:''}</div>`;
   }
   // footer
-  const pv=pages[hi-1],nx=pages[hi+1],lab=q=>q?(q.t==='toy'?'TOY Part 1 readiness':q.t==='c'?'Chapter: '+vname(q.v):q.m.name):'';
+  const pv=pages[hi-1],nx=pages[hi+1],lab=q=>q?(q.t==='toy'?'TOY Part '+q.part+' readiness':q.t==='c'?'Chapter: '+vname(q.v):q.m.name):'';
   const pb=$('hpv'),nb=$('hnx');pb.disabled=!pv;nb.disabled=!nx;
   pb.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span>'+(pv?'Previous: '+esc(lab(pv)):'Previous')+'</span>';
   nb.innerHTML='<span>'+(nx?'Next: '+esc(lab(nx)):'Next')+'</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   pb.setAttribute('aria-label',pv?'Previous page: '+lab(pv):'Previous page');nb.setAttribute('aria-label',nx?'Next page: '+lab(nx):'Next page');
   const idxs=pages.map((q,i)=>q.v===v?i:-1).filter(i=>i>=0);
-  $('hpg').innerHTML=`<div>${idxs.map(i=>`<i class="${i<hi?'dn':i===hi?'cr':''}"></i>`).join('')}</div><small>${p.t==='toy'?'TOY Part 1 readiness':p.t==='c'?'Chapter cover':'Page '+idxs.indexOf(hi)+' of '+(idxs.length-1)} · arrow keys to flip, or use the chapter tabs to jump</small>`;
+  $('hpg').innerHTML=`<div>${idxs.map(i=>`<i class="${i<hi?'dn':i===hi?'cr':''}"></i>`).join('')}</div><small>${p.t==='toy'?'TOY Part '+p.part+' readiness':p.t==='c'?'Chapter cover':'Page '+idxs.indexOf(hi)+' of '+(idxs.length-1)} · arrow keys to flip, or use the chapter tabs to jump</small>`;
   let ex=$('hex');if(!ex){ex=document.createElement('span');ex.id='hexw';ex.innerHTML=exportBtn('hex','Export Deck','this deck as a PDF');$('hsw').before(ex);ex.style.marginRight='10px';ex.querySelector('button').style.height='38px';ex.querySelector('button').onclick=()=>window.__exportDeck()}
 }
 // ---------- Balanced
@@ -2426,7 +2426,7 @@ const dfmt=x=>{const t=new Date(x*D1);return MN[t.getUTCMonth()]+' '+t.getUTCDat
 const S={slip:0,focus:'',sel:'',p2:false};
 const sc=t=>CODE[t&&t.status]||'N';
 const GATES=[
- {k:'ready',t:'Ready for Production Sim',c:'#2fbf71',sub:'Theoretical Build and Prototype are both done. These steps can go into Production Simulation Part 1.',f:s=>s.pr==='D'},
+ {k:'ready',t:'Ready for Production Sim',c:'#2fbf71',sub:'Theoretical Build and Prototype are both done. These steps are ready for Production Simulation.',f:s=>s.pr==='D'},
  {k:'proto',t:'Prototyping',c:'#ffb020',sub:'The Prototype has started.',f:s=>s.pr==='I'},
  {k:'theoryDone',t:'Theory done, prototype not started',c:'#4cc9c0',sub:'Theoretical Build is finished. The Prototype is waiting to start.',f:s=>s.pr==='N'&&s.tb==='D'},
  {k:'theory',t:'Still in Theoretical Build',c:'#3b8cff',sub:'Theoretical Build is not finished yet and the Prototype has not started.',f:s=>s.pr==='N'&&s.tb!=='D'}];
@@ -2446,25 +2446,26 @@ function load(){
 const cnt=(L,k)=>{const c={D:0,I:0,N:0};L.forEach(s=>c[s[k]]++);return c};
 function arc(cx,cy,R,r,a0,a1){const p=(q,a)=>(cx+q*Math.cos(a)).toFixed(2)+','+(cy+q*Math.sin(a)).toFixed(2),l=a1-a0>Math.PI?1:0;return 'M'+p(R,a0)+' A'+R+' '+R+' 0 '+l+' 1 '+p(R,a1)+' L'+p(r,a1)+' A'+r+' '+r+' 0 '+l+' 0 '+p(r,a0)+' Z'}
 const today=()=>Math.floor(Date.now()/D1);
-let ROOT=null,DATA=null;
-function gates(){return GATES.map(g=>({...g,list:DATA.P1.filter(g.f),on:S.focus==='pie:'+g.k}))}
-function totals(){const a=cnt(DATA.P1,'tb'),b=cnt(DATA.P1,'pr');return {D:a.D+b.D,I:a.I+b.I,N:a.N+b.N,tb:a,pr:b,n:DATA.P1.length*2}}
+let ROOT=null,DATA=null,PART=1;
+const L=()=>PART===1?DATA.P1:DATA.P2,M=()=>PART===1?DATA.m1:DATA.m2,START=()=>PART===1?DATA.p1S:DATA.p2S;
+function gates(){return GATES.map(g=>({...g,list:L().filter(g.f),on:S.focus==='pie:'+g.k}))}
+function totals(){const a=cnt(L(),'tb'),b=cnt(L(),'pr');return {D:a.D+b.D,I:a.I+b.I,N:a.N+b.N,tb:a,pr:b,n:L().length*2}}
 function rowHTML(s,ph){
-  const key=s.id+'|'+(ph||''),on=S.sel===key,days=DATA.p1S-today();
-  const dt=t=>t&&t.start?esc(rng(t.start,t.end||t.start)):'Not scheduled';
+  const key=s.id+'|'+(ph||''),on=S.sel===key,days=START()-today(),sh=PART===2?S.slip*7:0;
+  const dt=(t,mv)=>t&&t.start?(mv&&sh?esc(dfmt(dd(t.start)+sh)+' – '+dfmt(dd(t.end||t.start)+sh))+' (pushed '+S.slip+' weeks)':esc(rng(t.start,t.end||t.start))):'Not scheduled';
   const hi=(p,k)=>`color:${TX[k]};font-weight:${ph===p?700:400}`;
   return `<div><button type="button" class="ty-pr" data-a="row" data-k="${esc(key)}" aria-expanded="${on}">
     <span class="nm"><i style="background:${esc(dc(s.dept)||'#9aa5ad')}"></i>${esc(s.name)}</span>
     <span><u style="background:${DOT[s.tb]}"></u><span style="${hi('tb',s.tb)}">${LBL[s.tb]}</span></span>
     <span><u style="background:${DOT[s.pr]}"></u><span style="${hi('pr',s.pr)}">${LBL[s.pr]}</span></span>
     <span style="color:var(--mute)">${esc(s.dept||'')}</span><span style="color:var(--mute)" aria-hidden="true">${on?'⌄':'›'}</span></button>
-    ${on?`<div class="ty-pd"><dl><dt>Stage</dt><dd>${esc(slab(s.n.stage||''))}</dd><dt>Theoretical</dt><dd>${dt(s.tbT)}</dd><dt>Prototype</dt><dd>${dt(s.prT)}</dd>
-    <dt>Needed</dt><dd>${days>0?`By ${esc(fmt(DATA.m1.start))} for Production Simulation Part 1 (${days} days)`:'Production Simulation Part 1 is under way'}</dd><dt>People</dt><dd>${esc((s.n.people||[]).join(', ')||'Unassigned')}</dd><dt>Show</dt><dd>${s.shared?'TOY, WED':'TOY'}</dd></dl>
+    ${on?`<div class="ty-pd"><dl><dt>Stage</dt><dd>${esc(slab(s.n.stage||''))}</dd><dt>Theoretical</dt><dd>${dt(s.tbT)}</dd><dt>Prototype</dt><dd>${dt(s.prT,1)}</dd>
+    <dt>Needed</dt><dd>${days>0?`By ${esc(fmt(M().start))} for Production Simulation Part ${PART} (${days} days)`:`Production Simulation Part ${PART} is under way`}</dd><dt>People</dt><dd>${esc((s.n.people||[]).join(', ')||'Unassigned')}</dd><dt>Show</dt><dd>${s.shared?'TOY, WED':'TOY'}</dd></dl>
     ${s.n.page?`<p style="margin:10px 0 0"><button type="button" class="ty-x" data-pg="${esc(s.id)}" data-tip="Open this step’s full write-up page">Open page ↗</button></p>`:''}</div>`:''}</div>`}
 function panelHTML(){
   const f=S.focus;let title='',sub='',rows=[];
-  if(f.indexOf('bar:')===0){const k=f.slice(4);DATA.P1.forEach(s=>['tb','pr'].forEach(p=>{if(s[p]===k)rows.push([s,p])}));title=BAR[k].t+' · '+rows.length+' of '+totals().n+' build phases';sub=BAR[k].sub}
-  else if(f.indexOf('pie:')===0){const g=gates().find(x=>f==='pie:'+x.k);if(g){rows=g.list.map(s=>[s,'']);title=g.t+' · '+g.list.length+' of '+DATA.P1.length+' steps';sub=g.sub}}
+  if(f.indexOf('bar:')===0){const k=f.slice(4);L().forEach(s=>['tb','pr'].forEach(p=>{if(s[p]===k)rows.push([s,p])}));title=BAR[k].t+' · '+rows.length+' of '+totals().n+' build phases';sub=BAR[k].sub}
+  else if(f.indexOf('pie:')===0){const g=gates().find(x=>f==='pie:'+x.k);if(g){rows=g.list.map(s=>[s,'']);title=g.t+' · '+g.list.length+' of '+L().length+' steps';sub=g.sub}}
   else return '';
   return `<section class="tyc typ" id="typn" aria-label="${esc(title)}"><div class="typh"><div><h2>${esc(title)}</h2><p>${esc(sub)}</p></div><button type="button" class="ty-x" data-a="close" data-tip="Close this list">Close</button></div>
    ${rows.length?`<div class="ty-pr h" aria-hidden="true"><span>Step</span><span>Theoretical Build</span><span>Prototype</span><span>Department</span><span></span></div>`+rows.map(r=>rowHTML(r[0],r[1])).join(''):'<p style="padding:6px 16px 18px;color:var(--mute)">No steps here yet.</p>'}</section>`}
@@ -2487,36 +2488,36 @@ function runway(){
   return {html,stats,max:Math.max(1,Math.min(26,Math.floor((d.p2S-d.pr2[1])/7)))}}
 function p2HTML(){
   const d=DATA;if(!d.P2.length)return '';
-  const open=S.p2,R=runway(),max=R.max||16;S.slip=Math.min(S.slip,max);
+  const own=PART===2,open=own||S.p2,R=runway(),max=R.max||16;S.slip=Math.min(S.slip,max);
   const pre=[0,4,8,12].filter(n=>n<=max);
-  return `<section class="tyc" id="typ2"><div class="typ2h"><div><h2>Part 2 can follow</h2><p>${d.P2.length} more TOY steps are needed for Production Simulation Part 2${d.p2S?' on '+esc(fmt(d.m2.start)):''}, so their Prototype work has room to move.</p></div>
-   <button type="button" class="ty-x" data-a="p2" aria-expanded="${open}" data-tip="Show or hide the Part 2 steps and the push-back control">${open?'Hide Part 2 detail':'Show Part 2 detail'}</button></div>
+  return `<section class="tyc" id="typ2"><div class="typ2h"><div><h2>${own?'How far Part 2 can move':'Part 2 can follow'}</h2><p>${own?'Part 2 is needed on '+esc(fmt(d.m2.start))+', so its Prototype work can slide later without touching Part 1. Drag to see the float that is left.':d.P2.length+' more TOY steps are needed for Production Simulation Part 2'+(d.p2S?' on '+esc(fmt(d.m2.start)):'')+', so their Prototype work has room to move.'}</p></div>
+   ${own?'':`<button type="button" class="ty-x" data-a="p2" aria-expanded="${open}" data-tip="Show or hide the Part 2 steps and the push-back control">${open?'Hide Part 2 detail':'Show Part 2 detail'}</button>`}</div>
    ${open?`<div class="typ2b"><div class="tyctl"><div class="sl"><div><b>Push Part 2 Prototype later</b><span id="tysll" style="font-weight:600">${S.slip?'+'+S.slip+' weeks':'On plan'}</span></div>
    <input id="tysl" type="range" min="0" max="${max}" step="1" value="${S.slip}" aria-label="Weeks to push the Part 2 prototype later" data-tip="Drag to move the Part 2 Prototype window later. Part 1 dates never move.">
    <div class="tychips" role="group" aria-label="Quick picks">${pre.map(n=>`<button type="button" class="ty-chip" data-a="pre" data-k="${n}" aria-pressed="${S.slip===n}" data-tip="Push Part 2 Prototype ${n?n+' weeks later':'back to its planned dates'}">${n?'+'+n+' wk':'On plan'}</button>`).join('')}</div></div>
    <div class="tystat" id="tystat">${R.stats}</div></div>
    <div id="tyrun">${R.html}</div>
-   <div class="typ2c">${d.P2.map(s=>`<span title="${esc(s.name)}: Theoretical Build ${LBL[s.tb].toLowerCase()}, Prototype ${LBL[s.pr].toLowerCase()}"><u style="background:${DOT[s.tb]}"></u><u style="background:${DOT[s.pr]}"></u>${esc(s.name)}</span>`).join('')}</div>
-   <p class="tyf">Each pair of dots: Theoretical Build, then Prototype. Green done, amber in progress, grey not started.</p></div>`:''}</section>`}
+   ${own?'':`<div class="typ2c">${d.P2.map(s=>`<span title="${esc(s.name)}: Theoretical Build ${LBL[s.tb].toLowerCase()}, Prototype ${LBL[s.pr].toLowerCase()}"><u style="background:${DOT[s.tb]}"></u><u style="background:${DOT[s.pr]}"></u>${esc(s.name)}</span>`).join('')}</div>
+   <p class="tyf">Each pair of dots: Theoretical Build, then Prototype. Green done, amber in progress, grey not started.</p>`}</div>`:''}</section>`}
 function draw(){
-  if(!ROOT)return;const d=DATA,T=totals(),days=d.p1S-today();
+  if(!ROOT)return;const d=DATA,T=totals(),days=START()-today(),P=L(),n=P.length;
   const gs=gates(),slices=[];let a=-Math.PI/2;
-  gs.forEach(g=>{const n=g.list.length;if(!n)return;const a1=a+2*Math.PI*n/d.P1.length,mid=(a+a1)/2,dx=g.on?Math.cos(mid)*9:0,dy=g.on?Math.sin(mid)*9:0;
-    slices.push(`<path d="${arc(130,130,112,66,a,a1-1e-4)}" fill="${g.c}" stroke="var(--pn)" stroke-width="3" transform="translate(${dx.toFixed(1)} ${dy.toFixed(1)})" data-a="pie" data-k="${g.k}" data-tip="${esc(g.t+': '+n+' step'+(n>1?'s':'')+'. Click to list them')}" tabindex="0" role="button" aria-label="${esc(g.t+', '+n+' steps')}" aria-pressed="${g.on}"></path>`);a=a1});
-  const toyShared=d.P1.filter(s=>s.shared).length,p2sh=d.P2.filter(s=>s.shared).length;
-  ROOT.innerHTML=`<div class="ty"><header class="tyh"><div><div class="ey">TOY · Production Simulation Part 1</div><h1>TOY Part 1 readiness</h1>
-    <p class="sub">${d.P1.length} TOY steps need a finished Theoretical Build and Prototype before Part 1 begins on ${esc(fmt(d.m1.start))}.</p></div>
-    <div class="tyk"><b>${days>0?days:'Now'}</b><span>${days>0?'days until Part 1':'Part 1 is under way'}</span></div></header>
-   <div class="tyg"><div class="tyc"><div class="tyth"><h2 class="tyt">Build progress</h2><span>${d.P1.length} steps × 2 phases = ${T.n} phases · click a section</span></div>
+  gs.forEach(g=>{const k0=g.list.length;if(!k0)return;const a1=a+2*Math.PI*k0/n,mid=(a+a1)/2,dx=g.on?Math.cos(mid)*9:0,dy=g.on?Math.sin(mid)*9:0;
+    slices.push(`<path d="${arc(130,130,112,66,a,a1-1e-4)}" fill="${g.c}" stroke="var(--pn)" stroke-width="3" transform="translate(${dx.toFixed(1)} ${dy.toFixed(1)})" data-a="pie" data-k="${g.k}" data-tip="${esc(g.t+': '+k0+' step'+(k0>1?'s':'')+'. Click to list them')}" tabindex="0" role="button" aria-label="${esc(g.t+', '+k0+' steps')}" aria-pressed="${g.on}"></path>`);a=a1});
+  const shared=P.filter(s=>s.shared).length,excl=PART===1?d.x1:d.x2;
+  ROOT.innerHTML=`<div class="ty"><header class="tyh"><div><div class="ey">TOY · Production Simulation Part ${PART}</div><h1>TOY Part ${PART} readiness</h1>
+    <p class="sub">${n} TOY steps need a finished Theoretical Build and Prototype before Part ${PART} begins on ${esc(fmt(M().start))}.${PART===2?' They come after Part 1, so their Prototype work can be pushed later if needed.':''}</p></div>
+    <div class="tyk"><b>${days>0?days:'Now'}</b><span>${days>0?'days until Part '+PART:'Part '+PART+' is under way'}</span></div></header>
+   <div class="tyg"><div class="tyc"><div class="tyth"><h2 class="tyt">Build progress</h2><span>${n} steps × 2 phases = ${T.n} phases · click a section</span></div>
      <div class="tysegs">${['D','I','N'].map(k=>`<button type="button" class="ty-seg ${BAR[k].cls}" style="width:${100*T[k]/T.n}%;${T[k]?'':'display:none'}" data-a="bar" data-k="${k}" aria-pressed="${S.focus==='bar:'+k}" data-tip="${esc(BAR[k].tip)}" aria-label="${T[k]} build phases ${BAR[k].t.toLowerCase()}. Show which.">${T[k]}</button>`).join('')}</div>
      <div class="tylegs h">${['D','I','N'].map(k=>`<button type="button" class="ty-leg" data-a="bar" data-k="${k}" aria-pressed="${S.focus==='bar:'+k}" data-tip="${esc(BAR[k].tip)}"><span><i style="background:${k==='N'?'#5d6b75':DOT[k]}"></i>${BAR[k].t}</span><b>${T[k]}</b></button>`).join('')}</div>
-     <div class="typh2" aria-label="Progress by phase">${[['Theoretical Build',T.tb],['Prototype',T.pr]].map(([nm,c])=>`<div class="r"><b>${nm}</b><span class="m" role="img" aria-label="${nm}: ${c.D} done, ${c.I} in progress, ${c.N} not started"><i style="width:${100*c.D/d.P1.length}%;background:#2fbf71"></i><i style="width:${100*c.I/d.P1.length}%;background:#ffb020"></i><i style="width:${100*c.N/d.P1.length}%;background:#3a4650"></i></span><small>${c.D} done · ${c.I} in progress · ${c.N} not started</small></div>`).join('')}</div></div>
-    <div class="tyc typie"><div class="tyth" style="width:100%;margin-bottom:0"><h2 class="tyt">Where the ${d.P1.length} steps stand</h2></div>
-     <svg viewBox="0 0 260 260" role="group" aria-label="Donut chart of ${d.P1.length} TOY steps by readiness gate">${slices.join('')}<text x="130" y="136" text-anchor="middle" fill="var(--ink)" style="font-size:54px;font-weight:700">${d.P1.length}</text><text x="130" y="158" text-anchor="middle" fill="var(--mute)" style="font-size:13px">TOY steps</text></svg>
+     <div class="typh2" aria-label="Progress by phase">${[['Theoretical Build',T.tb],['Prototype',T.pr]].map(([nm,c])=>`<div class="r"><b>${nm}</b><span class="m" role="img" aria-label="${nm}: ${c.D} done, ${c.I} in progress, ${c.N} not started"><i style="width:${100*c.D/n}%;background:#2fbf71"></i><i style="width:${100*c.I/n}%;background:#ffb020"></i><i style="width:${100*c.N/n}%;background:#3a4650"></i></span><small>${c.D} done · ${c.I} in progress · ${c.N} not started</small></div>`).join('')}</div></div>
+    <div class="tyc typie"><div class="tyth" style="width:100%;margin-bottom:0"><h2 class="tyt">Where the ${n} steps stand</h2></div>
+     <svg viewBox="0 0 260 260" role="group" aria-label="Donut chart of ${n} TOY steps by readiness gate">${slices.join('')}<text x="130" y="136" text-anchor="middle" fill="var(--ink)" style="font-size:54px;font-weight:700">${n}</text><text x="130" y="158" text-anchor="middle" fill="var(--mute)" style="font-size:13px">TOY steps</text></svg>
      <div class="tylegs">${gs.map(g=>`<button type="button" class="ty-leg" data-a="pie" data-k="${g.k}" aria-pressed="${g.on}" data-tip="${esc('Show the steps that are: '+g.t.toLowerCase())}"><span><i style="background:${g.c}"></i>${esc(g.t)}</span><b>${g.list.length}</b></button>`).join('')}</div></div></div>
    ${S.focus?'':'<p class="tyhint">Click a section of the bar or a slice of the chart to see exactly which steps it covers.</p>'}
    ${panelHTML()}${p2HTML()}
-   <p class="tyf">Only steps tagged TOY are counted: ${d.P1.length} for Part 1${toyShared?` (${toyShared} shared with WED)`:''}${d.P2.length?` and ${d.P2.length} for Part 2${p2sh?` (${p2sh} shared with WED)`:''}`:''}.${d.x2?` Part 2 also lists ${d.x2} step${d.x2>1?'s':''} without a TOY tag${d.untag?` (${d.untag} with no show tag at all)`:''}, which ${d.x2>1?'are':'is'} left out.`:''}${d.x1?` Part 1 lists ${d.x1} non-TOY step${d.x1>1?'s':''}, left out.`:''}</p></div>`;
+   <p class="tyf">Only steps tagged TOY are counted: ${n} for Part ${PART}${shared?` (${shared} shared with WED)`:''}.${excl?` ${excl} other step${excl>1?'s':''} listed under Part ${PART} ${excl>1?'are':'is'} not tagged TOY and left out.`:''}</p></div>`;
 }
 function redraw(focusSel){
   const sc0=ROOT.scrollTop,ae=document.activeElement,fk=ae&&ae.dataset&&ae.dataset.a?`[data-a="${ae.dataset.a}"]${ae.dataset.k!=null?`[data-k="${CSS.escape(ae.dataset.k)}"]`:''}`:'';
@@ -2535,7 +2536,8 @@ function bind(){
   ROOT.oninput=e=>{if(e.target.id!=='tysl')return;S.slip=+e.target.value;const R=runway();ROOT.querySelector('#tyrun').innerHTML=R.html;ROOT.querySelector('#tystat').innerHTML=R.stats;ROOT.querySelector('#tysll').textContent=S.slip?'+'+S.slip+' weeks':'On plan';
     ROOT.querySelectorAll('.ty-chip[data-a=pre]').forEach(c=>c.setAttribute('aria-pressed',String(+c.dataset.k===S.slip)))}
 }
-window.__toyDraw=function(root){ROOT=root;DATA=load();if(!DATA){root.innerHTML='<p class="tyhint">TOY readiness needs the Production Simulation Part 1 milestone, which is not in this data.</p>';return}bind();draw()};
+window.__toyDraw=function(root,part){ROOT=root;DATA=load();if(part&&part!==PART){PART=part;S.focus='';S.sel=''}if(!DATA){root.innerHTML='<p class="tyhint">TOY readiness needs the Production Simulation Part 1 milestone, which is not in this data.</p>';return}bind();draw()};
 window.__toyOK=function(){return !!load()};
+window.__toyParts=function(){const d=load();return d?(d.P2.length&&d.p2S!=null?[1,2]:[1]):[]};
 })();
 </script></body></html>
