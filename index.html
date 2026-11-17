@@ -428,6 +428,105 @@ body[data-mode=hl] #hl,body[data-mode=bal] #bal,body[data-mode=pick] #pick{displ
 #tip{position:fixed;z-index:100000;max-width:300px;padding:7px 10px;border-radius:8px;background:#1a2025;border:1px solid #33404a;color:#eceff1;font:500 12px/1.4 Inter,system-ui,sans-serif;letter-spacing:0;text-transform:none;box-shadow:0 8px 24px rgba(0,0,0,.45);pointer-events:none;opacity:0;transform:translateY(3px);transition:opacity .12s,transform .12s;left:0;top:0}
 #tip.on{opacity:1;transform:none}
 @media (prefers-reduced-motion:reduce){#tip{transition:none}}
+
+#hlb.toy{display:block;overflow-y:auto;overflow-x:hidden;padding-top:clamp(8px,2vh,24px);padding-bottom:28px;scrollbar-gutter:stable}
+.ty{display:grid;gap:clamp(14px,2.4vh,22px);max-width:1360px;margin:0 auto}
+.ty *{box-sizing:border-box}
+.ty button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0;text-align:left}
+.ty button:focus-visible,.ty path:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.tyh{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+#hlb .ty h1{margin:8px 0 0;font-size:clamp(36px,5vw,68px);line-height:.95}
+.ty .sub{margin:10px 0 0;color:var(--mute);font-size:clamp(14px,1.2vw,16px);max-width:60ch}
+.tyk{border:1px solid var(--line);background:var(--pn);border-radius:12px;padding:10px 18px;text-align:right}
+.tyk b{display:block;font-size:clamp(34px,4vw,52px);line-height:1;font-weight:700}
+.tyk span{font-size:12px;color:var(--mute)}
+.tyg{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,420px);gap:clamp(14px,2vw,22px);align-items:stretch}
+.tyc{background:var(--pn);border:1px solid var(--line);border-radius:14px;padding:clamp(14px,1.6vw,20px)}
+.tyc>h2,.tyt{margin:0;font-size:18px;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.tyth{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.tyth span{font-size:12px;color:var(--mute)}
+.tysegs{display:flex;gap:4px;height:clamp(52px,8vh,72px)}
+.ty-seg{border-radius:10px;border:2px solid transparent;display:flex;align-items:center;padding:0 16px;font-size:clamp(24px,2.6vw,36px);font-weight:700;min-width:46px;overflow:hidden;white-space:nowrap}
+.ty-seg.d{background:#2fbf71;color:#07090a}.ty-seg.i{background:#ffb020;color:#07090a}.ty-seg.n{background:#3a4650;color:#eceff1}
+.ty-seg:hover{filter:brightness(1.12)}
+.ty-seg[aria-pressed=true]{border-color:#eceff1;box-shadow:0 0 0 3px rgba(236,239,241,.18)}
+.tylegs{display:grid;gap:6px}
+.tylegs.h{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:14px}.tylegs.h .ty-leg{justify-content:flex-start;gap:10px}
+.ty-leg{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;padding:8px 12px;border-radius:9px;border:1px solid var(--line);background:var(--bg)}
+.ty-leg:hover{border-color:var(--ln2)}
+.ty-leg[aria-pressed=true]{border-color:var(--ac);background:#12203a}
+.ty-leg span{display:flex;align-items:center;gap:8px;min-width:0}
+.ty-leg i{display:inline-block;width:10px;height:10px;border-radius:3px;flex:none}
+.ty-leg b{font-variant-numeric:tabular-nums}
+.tynote{margin-top:14px;padding-top:12px;border-top:1px solid var(--line);color:var(--mute);font-size:12px;display:grid;gap:2px}
+.tynote b{color:var(--ink);font-weight:600}
+.typie{display:grid;gap:12px;justify-items:center}
+.typie svg{width:min(240px,100%);height:auto;overflow:visible}
+.typie .tylegs{width:100%}
+.typie path{cursor:pointer;transition:transform .15s}
+.tyhint{text-align:center;color:var(--mute);padding:4px 0}
+.typ{padding:0;overflow:hidden}
+.typh{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:16px 16px 10px}
+.typh h2{margin:0;font-size:clamp(20px,2vw,26px);text-transform:uppercase;font-weight:600;letter-spacing:.04em}
+.typh p{margin:4px 0 0;color:var(--mute)}
+.ty-x{padding:5px 12px;border-radius:8px;border:1px solid var(--ln2);color:#c0c9d0;min-height:30px;white-space:nowrap}
+.ty-x:hover{border-color:var(--ac)}
+.ty-pr{display:grid;grid-template-columns:minmax(0,1fr) 170px 170px 140px 18px;gap:12px;align-items:center;padding:10px 16px;border-top:1px solid var(--line);width:100%}
+.ty-pr:hover{background:var(--pn2)}
+.ty-pr.h{color:var(--mute);font-size:12px;padding-top:6px;padding-bottom:6px;border-top:1px solid var(--line)}
+.ty-pr .nm{display:flex;gap:8px;align-items:center;font-weight:600;min-width:0}
+.ty-pr .nm i{width:8px;height:8px;border-radius:2px;flex:none}
+.ty-pr u{text-decoration:none;display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.ty-pd{padding:8px 16px 14px 32px;border-top:1px solid var(--line);background:var(--bg)}
+.ty-pd dl{display:grid;grid-template-columns:110px minmax(0,1fr);gap:6px 10px;margin:0}
+.ty-pd dt{color:var(--mute)}.ty-pd dd{margin:0}
+.typ2h{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+.typ2h h2{margin:0;font-size:18px;letter-spacing:.06em;text-transform:uppercase;font-weight:600}
+.typ2h p{margin:4px 0 0;color:var(--mute);max-width:70ch}
+.typ2b{display:grid;gap:18px;margin-top:16px;border-top:1px solid var(--line);padding-top:16px}
+.tyctl{display:flex;gap:28px;align-items:center;flex-wrap:wrap}
+.tyctl .sl{min-width:280px;flex:1}
+.tyctl .sl>div:first-child{display:flex;justify-content:space-between}
+.tyctl input[type=range]{width:100%;accent-color:var(--ac);margin:10px 0 6px}
+.tychips{display:flex;flex-wrap:wrap;gap:6px}
+.ty-chip{padding:4px 12px;border-radius:999px;border:1px solid var(--ln2);background:var(--bg);color:var(--mute);min-height:30px}
+.ty-chip[aria-pressed=true]{background:#1b2a42;border-color:var(--ac);color:var(--ink)}
+.tystat{display:grid;grid-template-columns:auto auto;gap:6px 18px;align-items:center}
+.tystat .k{color:var(--mute)}
+.tytag{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:600;border:1px solid}
+.tytag.ok{color:#4fd18b;border-color:#2fbf71;background:#10261a}.tytag.warn{color:#ffb84d;border-color:#ffb020;background:#2a1f0a}.tytag.bad{color:#ff8a8a;border-color:#ef5350;background:#2d1313}
+.tyrw{position:relative}
+.tyrow{display:flex;align-items:center;min-height:46px}
+.tyrow .l{width:170px;flex:none;line-height:1.2;padding-right:10px}
+.tyrow .l b{display:block;font-weight:600;font-size:13px}.tyrow .l span{font-size:11px;color:var(--mute)}
+.tyrow .t,.tyax .t{position:relative;flex:1;height:46px;min-width:0}
+.tyax{display:flex;height:20px}.tyax .l{width:170px;flex:none}.tyax .t{height:20px!important}
+.tyax span{position:absolute;top:2px;font-size:11px;color:var(--mute);padding-left:5px;white-space:nowrap}
+.tyov{position:absolute;top:0;bottom:0;left:170px;right:0;pointer-events:none}
+.tyvl{position:absolute;top:0;bottom:0;width:1px;background:var(--line)}
+.tytd{position:absolute;top:0;bottom:0;width:2px;background:#ffb020}
+.tybar{position:absolute;top:12px;height:22px;border-radius:6px;overflow:hidden;border:1px solid}
+.tybar.p1{border-color:#3b8cff;background:#12203a}.tybar.p2{border-color:#6b7882;background:#1a2025}.tybar.sim{background:transparent;border-style:dashed}
+.tydone{position:absolute;left:0;top:0;bottom:0;background:#2fbf71}
+.typrog{position:absolute;top:0;bottom:0;background:repeating-linear-gradient(135deg,#ffb020 0 5px,#a86d0c 5px 10px)}
+.tyfl{position:absolute;top:12px;height:22px;border:1px dashed #ffb020;border-radius:6px;background:repeating-linear-gradient(135deg,rgba(255,176,32,0) 0 6px,rgba(255,176,32,.16) 6px 12px);color:#ffb84d;font-size:11px;display:flex;align-items:center;justify-content:center;overflow:hidden;white-space:nowrap}
+.tygh{position:absolute;top:12px;height:22px;border:1px dashed #6b7882;border-radius:6px}
+.typ2c{display:flex;flex-wrap:wrap;gap:6px}
+.typ2c span{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;border:1px solid var(--ln2);background:var(--bg);font-size:12px}
+.typ2c u{text-decoration:none;display:inline-block;width:8px;height:8px;border-radius:50%}
+.tyf{margin:0;color:var(--mute);font-size:12px}
+@media(max-width:900px){.tyg{grid-template-columns:1fr}.ty-pr{grid-template-columns:minmax(0,1fr) 120px 120px}.ty-pr>:nth-child(4),.ty-pr>:nth-child(5){display:none}.tylegs.h{grid-template-columns:1fr}.tyrow .l,.tyax .l{width:96px}.tyov{left:96px}}
+@media(prefers-reduced-motion:reduce){.typie path{transition:none}}
+
+.typh2{display:grid;gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid var(--line)}
+.typh2 .r{display:grid;grid-template-columns:130px minmax(0,1fr) auto;gap:12px;align-items:center}
+.typh2 .r b{font-weight:600}.typh2 .r small{color:var(--mute);font-size:12px;white-space:nowrap}
+.typh2 .m{display:flex;height:14px;gap:2px;border-radius:7px;overflow:hidden}
+.typh2 .m i{display:block;height:100%}
+#hl .tt{white-space:nowrap}
+#hl .hc{padding-left:9px;padding-right:9px}#hl .tb nav{gap:4px}
+.tyg>.tyc:first-child{display:flex;flex-direction:column;justify-content:center}
+#hl .tt{padding-right:14px}
 </style></head><body><canvas id="dots" aria-hidden="true"></canvas><div id="splash" role="dialog" aria-modal="true" aria-label="Enter password"><canvas></canvas><form id="gate" hidden autocomplete="off"><label for="pw" class="sro">Password</label><input id="pw" type="password" autocomplete="off" spellcheck="false" placeholder="Password"><button type="submit">Enter</button><p id="gerr" role="alert"></p></form></div><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><pattern id="hx" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 0V6" stroke="#ffd24a" stroke-opacity=".55" stroke-width="2"/></pattern></defs></svg><div class="wrap" id="wrap">
 <header class="hd0"><div><h1>Studio workflow build</h1><div class="sub" id="sub"></div></div><a class="src-link" href="https://app.notion.com/p/pxo-innovation-lab/4012434c3f4d8095b2f4dd67dd1eadf5?v=4062434c3f4d80e68624000c388fb8df" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5h6.5L13 6v7.5H3z"/><path d="M9.5 2.5V6H13M5.5 9h5M5.5 11.5h3"/></svg>Source database in Notion<span aria-hidden="true">↗</span></a></header>
 <div class="bar"><nav class="tabs" id="tabs" role="tablist"></nav>
@@ -1471,25 +1570,26 @@ window.__gate=()=>{body.dataset.mode='pick';const p=$('pick');setTimeout(()=>p.q
 document.querySelectorAll('#pick .tpc').forEach(c=>c.onclick=()=>{mode='';setMode(c.dataset.m)});
 // ---------- High Level deck
 const CH=VERTS.map(v=>v[0]);let pages=[],hi=0;
-function buildPages(){pages=[];CH.forEach(v=>{pages.push({t:'c',v});msList(v).forEach(m=>pages.push({t:'m',v,m}))})}
+function buildPages(){pages=[];if(window.__toyOK&&window.__toyOK())pages.push({t:'toy',v:'toy'});CH.forEach(v=>{pages.push({t:'c',v});msList(v).forEach(m=>pages.push({t:'m',v,m}))})}
 function drawHL(){
   if(!pages.length)buildPages();
   const hl=$('hl');hl.innerHTML='<div class="tb"><div class="tt">Studio Workflow Build</div><nav id="hnav" aria-label="Chapters"></nav><span id="hsw"></span></div><div id="hlb" aria-live="polite"></div><div class="hft"><button class="hn" id="hpv"></button><div class="hprog" id="hpg"></div><button class="hn pr" id="hnx"></button></div>';
   $('hsw').appendChild(vsw);
-  $('hnav').innerHTML=VERTS.map((v,i)=>`<button class="hc" data-v="${v[0]}" style="--c:${v[2]}"><i></i>${String(i+1).padStart(2,'0')} ${esc(v[1].replace(' Content',''))}</button>`).join('');
-  $('hnav').onclick=e=>{const b=e.target.closest('.hc');if(b){hi=pages.findIndex(p=>p.t==='c'&&p.v===b.dataset.v);showHL()}};
+  $('hnav').innerHTML=(pages[0]&&pages[0].t==='toy'?'<button class="hc" data-v="toy" style="--c:#3b8cff" data-tip="TOY Part 1 readiness for Production Simulation"><i></i>TOY</button>':'')+VERTS.map((v,i)=>`<button class="hc" data-v="${v[0]}" style="--c:${v[2]}"><i></i>${String(i+1).padStart(2,'0')} ${esc(v[1].replace(' Content',''))}</button>`).join('');
+  $('hnav').onclick=e=>{const b=e.target.closest('.hc');if(b){hi=pages.findIndex(p=>(p.t==='c'||p.t==='toy')&&p.v===b.dataset.v);showHL()}};
   $('hpv').onclick=()=>step(-1);$('hnx').onclick=()=>step(1);
-  hi=0;if(selM&&N[selM]){const k=pages.findIndex(p=>p.m===N[selM]);if(k>=0)hi=k}
+  hi=0;
   showHL();
   if(!drawHL.k){drawHL.k=1;addEventListener('keydown',e=>{if(mode!=='hl'||e.metaKey||e.ctrlKey||e.altKey||/INPUT|TEXTAREA|SELECT/.test(e.target.tagName))return;if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();step(1)}else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();step(-1)}else if(e.key==='Home'){hi=0;showHL()}else if(e.key==='End'){hi=pages.length-1;showHL()}})}
 }
 function step(d){const k=hi+d;if(k<0||k>=pages.length)return;hi=k;showHL()}
 const ptitle=p=>p.t==='c'?vname(p.v)+' (chapter cover)':p.m.name;
 function showHL(){
-  const p=pages[hi],v=p.v,ci=CH.indexOf(v),col=VC[v],hl=$('hl');hl.style.setProperty('--tc',col);
+  const p=pages[hi],v=p.v,ci=CH.indexOf(v),col=p.t==='toy'?'#3b8cff':VC[v],hl=$('hl');hl.style.setProperty('--tc',col);
   document.querySelectorAll('#hnav .hc').forEach(b=>b.setAttribute('aria-current',b.dataset.v===v));
   const list=msList(v),b=$('hlb');
-  if(p.t==='c'){
+  if(p.t==='toy'){b.className='toy';b.style.display='block';b.style.alignItems='';window.__toyDraw(b)}
+  else if(p.t==='c'){
     const first=list.find(m=>m.start),act=list.filter(m=>m.status==='In progress').length;
     const shown=list.slice(0,7),more=list.length-shown.length;
     b.className='';b.style.display='flex';b.style.alignItems='center';
@@ -1507,13 +1607,13 @@ function showHL(){
       <div class="hrm"><div class="hk">WHERE THIS SITS IN ${esc(vname(v).toUpperCase())}</div>${a>0?`<div style="font-size:12px;color:var(--mute);padding-bottom:4px">${a} earlier milestone${a>1?'s':''}</div>`:''}${w.map(x=>`<div class="hrr${x===m?' cur':''}"><i class="${x.status==='In progress'?'':'nn'}"></i><div><b>${esc(x.name)}</b><span>${esc(rng(x.start,x.end))}${x===m?' · you are here':''}</span></div></div>`).join('')}${a+w.length<list.length?`<div style="font-size:12px;color:var(--mute);padding-top:6px">+ ${list.length-a-w.length} later milestone${list.length-a-w.length>1?'s':''}</div>`:''}</div>`;
   }
   // footer
-  const pv=pages[hi-1],nx=pages[hi+1],lab=q=>q?(q.t==='c'?'Chapter: '+vname(q.v):q.m.name):'';
+  const pv=pages[hi-1],nx=pages[hi+1],lab=q=>q?(q.t==='toy'?'TOY Part 1 readiness':q.t==='c'?'Chapter: '+vname(q.v):q.m.name):'';
   const pb=$('hpv'),nb=$('hnx');pb.disabled=!pv;nb.disabled=!nx;
   pb.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg><span>'+(pv?'Previous: '+esc(lab(pv)):'Previous')+'</span>';
   nb.innerHTML='<span>'+(nx?'Next: '+esc(lab(nx)):'Next')+'</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
   pb.setAttribute('aria-label',pv?'Previous page: '+lab(pv):'Previous page');nb.setAttribute('aria-label',nx?'Next page: '+lab(nx):'Next page');
   const idxs=pages.map((q,i)=>q.v===v?i:-1).filter(i=>i>=0);
-  $('hpg').innerHTML=`<div>${idxs.map(i=>`<i class="${i<hi?'dn':i===hi?'cr':''}"></i>`).join('')}</div><small>${p.t==='c'?'Chapter cover':'Page '+idxs.indexOf(hi)+' of '+(idxs.length-1)} · arrow keys to flip, or use the chapter tabs to jump</small>`;
+  $('hpg').innerHTML=`<div>${idxs.map(i=>`<i class="${i<hi?'dn':i===hi?'cr':''}"></i>`).join('')}</div><small>${p.t==='toy'?'TOY Part 1 readiness':p.t==='c'?'Chapter cover':'Page '+idxs.indexOf(hi)+' of '+(idxs.length-1)} · arrow keys to flip, or use the chapter tabs to jump</small>`;
   let ex=$('hex');if(!ex){ex=document.createElement('span');ex.id='hexw';ex.innerHTML=exportBtn('hex','Export Deck','this deck as a PDF');$('hsw').before(ex);ex.style.marginRight='10px';ex.querySelector('button').style.height='38px';ex.querySelector('button').onclick=()=>window.__exportDeck()}
 }
 // ---------- Balanced
@@ -2314,5 +2414,128 @@ document.addEventListener('focusin',e=>{const el=find(e.target);if(el&&el.matche
 document.addEventListener('focusout',hide);
 addEventListener('scroll',hide,true);
 window.__tipFor=el=>{const e=find(el);return e?textFor(e):''};
+})();
+</script><script>// ---------- TOY Part 1 readiness: first slide of the High Level deck (built live from the milestone and step data)
+(function(){
+const fmt=(...a)=>window.__T.fmt(...a),rng=(...a)=>window.__T.rng(...a),feedSteps=m=>window.__T.feedSteps(m);
+const D1=864e5,dd=s=>Date.parse(s+'T00:00:00Z')/D1;
+const CODE={'Done':'D','In progress':'I','Not started':'N'},LBL={D:'Done',I:'In progress',N:'Not started'};
+const DOT={D:'#2fbf71',I:'#ffb020',N:'#5d6b75'},TX={D:'#4fd18b',I:'#ffb84d',N:'#9aa5ad'};
+const MN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const dfmt=x=>{const t=new Date(x*D1);return MN[t.getUTCMonth()]+' '+t.getUTCDate()};
+const S={slip:0,focus:'',sel:'',p2:false};
+const sc=t=>CODE[t&&t.status]||'N';
+const GATES=[
+ {k:'ready',t:'Ready for Production Sim',c:'#2fbf71',sub:'Theoretical Build and Prototype are both done. These steps can go into Production Simulation Part 1.',f:s=>s.pr==='D'},
+ {k:'proto',t:'Prototyping',c:'#ffb020',sub:'The Prototype has started.',f:s=>s.pr==='I'},
+ {k:'theoryDone',t:'Theory done, prototype not started',c:'#4cc9c0',sub:'Theoretical Build is finished. The Prototype is waiting to start.',f:s=>s.pr==='N'&&s.tb==='D'},
+ {k:'theory',t:'Still in Theoretical Build',c:'#3b8cff',sub:'Theoretical Build is not finished yet and the Prototype has not started.',f:s=>s.pr==='N'&&s.tb!=='D'}];
+const BAR={D:{t:'Done',sub:'Build phases that are finished.',cls:'d',tip:'Show the build phases that are finished'},I:{t:'In progress',sub:'Build phases that are under way.',cls:'i',tip:'Show the build phases that are under way'},N:{t:'Not started',sub:'Build phases that have not begun.',cls:'n',tip:'Show the build phases that have not begun'}};
+function load(){
+  const find=n=>mss.find(m=>m.vert==='Linear'&&m.name.indexOf(n)===0);
+  const m1=find('Production Simulation Part 1'),m2=find('Production Simulation Part 2');
+  if(!m1||!m1.start)return null;
+  const raw=m=>m?((m.feeds&&m.feeds['Production Test'])||feedSteps(m)).filter(i=>N[i]):[];
+  const toy=i=>(N[i].shows||[]).includes('TOY');
+  const mk=i=>{const n=N[i],t=n.tasks||{};return {id:i,name:n.name,n,tbT:t['Theoretical Build'],prT:t['Prototype'],tb:sc(t['Theoretical Build']),pr:sc(t['Prototype']),dept:(n.dept||'').split(',')[0].trim(),shared:(n.shows||[]).includes('WED')}};
+  const r1=raw(m1),r2=raw(m2),P1=r1.filter(toy).map(mk),P2=r2.filter(toy).map(mk);
+  const x2=r2.filter(i=>!toy(i)),untag=x2.filter(i=>!(N[i].shows||[]).length).length;
+  const win=(L,k)=>{const a=L.map(s=>s[k]&&s[k].start).filter(Boolean).map(dd),b=L.map(s=>s[k]&&(s[k].end||s[k].start)).filter(Boolean).map(dd);return a.length?[Math.min(...a),Math.max(...b)]:null};
+  return {m1,m2,P1,P2,x1:r1.length-P1.length,x2:x2.length,untag,tb1:win(P1,'tbT'),pr1:win(P1,'prT'),tb2:win(P2,'tbT'),pr2:win(P2,'prT'),
+    p1S:dd(m1.start),p1E:dd(m1.end||m1.start),p2S:m2&&m2.start?dd(m2.start):null,p2E:m2&&m2.start?dd(m2.end||m2.start):null}}
+const cnt=(L,k)=>{const c={D:0,I:0,N:0};L.forEach(s=>c[s[k]]++);return c};
+function arc(cx,cy,R,r,a0,a1){const p=(q,a)=>(cx+q*Math.cos(a)).toFixed(2)+','+(cy+q*Math.sin(a)).toFixed(2),l=a1-a0>Math.PI?1:0;return 'M'+p(R,a0)+' A'+R+' '+R+' 0 '+l+' 1 '+p(R,a1)+' L'+p(r,a1)+' A'+r+' '+r+' 0 '+l+' 0 '+p(r,a0)+' Z'}
+const today=()=>Math.floor(Date.now()/D1);
+let ROOT=null,DATA=null;
+function gates(){return GATES.map(g=>({...g,list:DATA.P1.filter(g.f),on:S.focus==='pie:'+g.k}))}
+function totals(){const a=cnt(DATA.P1,'tb'),b=cnt(DATA.P1,'pr');return {D:a.D+b.D,I:a.I+b.I,N:a.N+b.N,tb:a,pr:b,n:DATA.P1.length*2}}
+function rowHTML(s,ph){
+  const key=s.id+'|'+(ph||''),on=S.sel===key,days=DATA.p1S-today();
+  const dt=t=>t&&t.start?esc(rng(t.start,t.end||t.start)):'Not scheduled';
+  const hi=(p,k)=>`color:${TX[k]};font-weight:${ph===p?700:400}`;
+  return `<div><button type="button" class="ty-pr" data-a="row" data-k="${esc(key)}" aria-expanded="${on}">
+    <span class="nm"><i style="background:${esc(dc(s.dept)||'#9aa5ad')}"></i>${esc(s.name)}</span>
+    <span><u style="background:${DOT[s.tb]}"></u><span style="${hi('tb',s.tb)}">${LBL[s.tb]}</span></span>
+    <span><u style="background:${DOT[s.pr]}"></u><span style="${hi('pr',s.pr)}">${LBL[s.pr]}</span></span>
+    <span style="color:var(--mute)">${esc(s.dept||'')}</span><span style="color:var(--mute)" aria-hidden="true">${on?'⌄':'›'}</span></button>
+    ${on?`<div class="ty-pd"><dl><dt>Stage</dt><dd>${esc(slab(s.n.stage||''))}</dd><dt>Theoretical</dt><dd>${dt(s.tbT)}</dd><dt>Prototype</dt><dd>${dt(s.prT)}</dd>
+    <dt>Needed</dt><dd>${days>0?`By ${esc(fmt(DATA.m1.start))} for Production Simulation Part 1 (${days} days)`:'Production Simulation Part 1 is under way'}</dd><dt>People</dt><dd>${esc((s.n.people||[]).join(', ')||'Unassigned')}</dd><dt>Show</dt><dd>${s.shared?'TOY, WED':'TOY'}</dd></dl>
+    ${s.n.page?`<p style="margin:10px 0 0"><button type="button" class="ty-x" data-pg="${esc(s.id)}" data-tip="Open this step’s full write-up page">Open page ↗</button></p>`:''}</div>`:''}</div>`}
+function panelHTML(){
+  const f=S.focus;let title='',sub='',rows=[];
+  if(f.indexOf('bar:')===0){const k=f.slice(4);DATA.P1.forEach(s=>['tb','pr'].forEach(p=>{if(s[p]===k)rows.push([s,p])}));title=BAR[k].t+' · '+rows.length+' of '+totals().n+' build phases';sub=BAR[k].sub}
+  else if(f.indexOf('pie:')===0){const g=gates().find(x=>f==='pie:'+x.k);if(g){rows=g.list.map(s=>[s,'']);title=g.t+' · '+g.list.length+' of '+DATA.P1.length+' steps';sub=g.sub}}
+  else return '';
+  return `<section class="tyc typ" id="typn" aria-label="${esc(title)}"><div class="typh"><div><h2>${esc(title)}</h2><p>${esc(sub)}</p></div><button type="button" class="ty-x" data-a="close" data-tip="Close this list">Close</button></div>
+   ${rows.length?`<div class="ty-pr h" aria-hidden="true"><span>Step</span><span>Theoretical Build</span><span>Prototype</span><span>Department</span><span></span></div>`+rows.map(r=>rowHTML(r[0],r[1])).join(''):'<p style="padding:6px 16px 18px;color:var(--mute)">No steps here yet.</p>'}</section>`}
+function ticksOf(T0,T1){const o=[];const s=new Date(T0*D1);let y=s.getUTCFullYear(),m=s.getUTCMonth()+1;for(;;m++){if(m>11){m=0;y++}const d=Date.UTC(y,m,1)/D1;if(d>T1)break;o.push([d,MN[m]+(m===0?' ’'+String(y).slice(2):'')])}return o}
+function runway(){
+  const d=DATA,slip=S.slip,sh=slip*7;if(!d.pr2||!d.pr1||d.p2S==null)return {html:'',stats:''};
+  const T0=Math.floor(Math.min(today(),d.tb1?d.tb1[0]:today(),d.pr1[0])/1)-4,T1=d.p2E+21,sp=T1-T0,pc=x=>100*(x-T0)/sp;
+  const pos=(a,b)=>`left:${pc(a).toFixed(2)}%;width:${Math.max(.8,100*(b-a)/sp).toFixed(2)}%`;
+  const c1=cnt(d.P1,'pr'),c2=cnt(d.P2,'pr'),n1=d.P1.length,n2=d.P2.length;
+  const fill=(c,n)=>`<div class="tydone" style="width:${100*c.D/n}%"></div><div class="typrog" style="left:${100*c.D/n}%;width:${100*c.I/n}%"></div>`;
+  const e2=d.pr2[1]+sh,s2=d.pr2[0]+sh,fd=d.p2S-e2,fw=Math.floor(fd/7);
+  const state=fd>=28?['ok','Comfortable']:fd>=14?['warn','Tight']:['bad','At risk'];
+  const ov=Math.round(Math.max(0,Math.min(e2,d.p1E)-Math.max(s2,d.p1S))/7);
+  const html=`<div class="tyrw"><div class="tyax"><div class="l"></div><div class="t">${ticksOf(T0,T1).map(t=>`<span style="left:${pc(t[0]).toFixed(2)}%">${t[1]}</span>`).join('')}</div></div>
+   <div class="tyov">${ticksOf(T0,T1).map(t=>`<div class="tyvl" style="left:${pc(t[0]).toFixed(2)}%"></div>`).join('')}<div class="tytd" style="left:${pc(today()).toFixed(2)}%" title="Today"></div></div>
+   <div class="tyrow"><div class="l"><b>Part 1 · priority</b><span>Prototype, then Production Sim</span></div><div class="t"><div class="tybar p1" style="${pos(d.pr1[0],d.pr1[1])}">${fill(c1,n1)}</div><div class="tybar p1 sim" style="${pos(d.p1S,d.p1E)}"></div></div></div>
+   <div class="tyrow"><div class="l"><b>Part 2 · can follow</b><span>Prototype, then Production Sim</span></div><div class="t">${slip>0?`<div class="tygh" style="${pos(d.pr2[0],d.pr2[1])}"></div>`:''}${fd>0?`<div class="tyfl" style="${pos(e2,d.p2S)}">${fw} wk float</div>`:''}<div class="tybar p2" style="${pos(s2,e2)}">${fill(c2,n2)}</div><div class="tybar p2 sim" style="${pos(d.p2S,d.p2E)}"></div></div></div></div>
+   ${ov>0?`<p style="margin:10px 0 0;color:var(--mute)">At this setting, Part 2 prototyping would overlap Part 1’s production test for ${ov} weeks.</p>`:''}`;
+  const stats=`<span class="k">Part 2 Prototype ends</span><b>${dfmt(e2)}</b><span class="k">Float before ${dfmt(d.p2S)}</span><b>${fw} weeks</b><span class="k">Schedule health</span><span><span class="tytag ${state[0]}">${state[1]}</span></span>`;
+  return {html,stats,max:Math.max(1,Math.min(26,Math.floor((d.p2S-d.pr2[1])/7)))}}
+function p2HTML(){
+  const d=DATA;if(!d.P2.length)return '';
+  const open=S.p2,R=runway(),max=R.max||16;S.slip=Math.min(S.slip,max);
+  const pre=[0,4,8,12].filter(n=>n<=max);
+  return `<section class="tyc" id="typ2"><div class="typ2h"><div><h2>Part 2 can follow</h2><p>${d.P2.length} more TOY steps are needed for Production Simulation Part 2${d.p2S?' on '+esc(fmt(d.m2.start)):''}, so their Prototype work has room to move.</p></div>
+   <button type="button" class="ty-x" data-a="p2" aria-expanded="${open}" data-tip="Show or hide the Part 2 steps and the push-back control">${open?'Hide Part 2 detail':'Show Part 2 detail'}</button></div>
+   ${open?`<div class="typ2b"><div class="tyctl"><div class="sl"><div><b>Push Part 2 Prototype later</b><span id="tysll" style="font-weight:600">${S.slip?'+'+S.slip+' weeks':'On plan'}</span></div>
+   <input id="tysl" type="range" min="0" max="${max}" step="1" value="${S.slip}" aria-label="Weeks to push the Part 2 prototype later" data-tip="Drag to move the Part 2 Prototype window later. Part 1 dates never move.">
+   <div class="tychips" role="group" aria-label="Quick picks">${pre.map(n=>`<button type="button" class="ty-chip" data-a="pre" data-k="${n}" aria-pressed="${S.slip===n}" data-tip="Push Part 2 Prototype ${n?n+' weeks later':'back to its planned dates'}">${n?'+'+n+' wk':'On plan'}</button>`).join('')}</div></div>
+   <div class="tystat" id="tystat">${R.stats}</div></div>
+   <div id="tyrun">${R.html}</div>
+   <div class="typ2c">${d.P2.map(s=>`<span title="${esc(s.name)}: Theoretical Build ${LBL[s.tb].toLowerCase()}, Prototype ${LBL[s.pr].toLowerCase()}"><u style="background:${DOT[s.tb]}"></u><u style="background:${DOT[s.pr]}"></u>${esc(s.name)}</span>`).join('')}</div>
+   <p class="tyf">Each pair of dots: Theoretical Build, then Prototype. Green done, amber in progress, grey not started.</p></div>`:''}</section>`}
+function draw(){
+  if(!ROOT)return;const d=DATA,T=totals(),days=d.p1S-today();
+  const gs=gates(),slices=[];let a=-Math.PI/2;
+  gs.forEach(g=>{const n=g.list.length;if(!n)return;const a1=a+2*Math.PI*n/d.P1.length,mid=(a+a1)/2,dx=g.on?Math.cos(mid)*9:0,dy=g.on?Math.sin(mid)*9:0;
+    slices.push(`<path d="${arc(130,130,112,66,a,a1-1e-4)}" fill="${g.c}" stroke="var(--pn)" stroke-width="3" transform="translate(${dx.toFixed(1)} ${dy.toFixed(1)})" data-a="pie" data-k="${g.k}" data-tip="${esc(g.t+': '+n+' step'+(n>1?'s':'')+'. Click to list them')}" tabindex="0" role="button" aria-label="${esc(g.t+', '+n+' steps')}" aria-pressed="${g.on}"></path>`);a=a1});
+  const toyShared=d.P1.filter(s=>s.shared).length,p2sh=d.P2.filter(s=>s.shared).length;
+  ROOT.innerHTML=`<div class="ty"><header class="tyh"><div><div class="ey">TOY · Production Simulation Part 1</div><h1>TOY Part 1 readiness</h1>
+    <p class="sub">${d.P1.length} TOY steps need a finished Theoretical Build and Prototype before Part 1 begins on ${esc(fmt(d.m1.start))}.</p></div>
+    <div class="tyk"><b>${days>0?days:'Now'}</b><span>${days>0?'days until Part 1':'Part 1 is under way'}</span></div></header>
+   <div class="tyg"><div class="tyc"><div class="tyth"><h2 class="tyt">Build progress</h2><span>${d.P1.length} steps × 2 phases = ${T.n} phases · click a section</span></div>
+     <div class="tysegs">${['D','I','N'].map(k=>`<button type="button" class="ty-seg ${BAR[k].cls}" style="width:${100*T[k]/T.n}%;${T[k]?'':'display:none'}" data-a="bar" data-k="${k}" aria-pressed="${S.focus==='bar:'+k}" data-tip="${esc(BAR[k].tip)}" aria-label="${T[k]} build phases ${BAR[k].t.toLowerCase()}. Show which.">${T[k]}</button>`).join('')}</div>
+     <div class="tylegs h">${['D','I','N'].map(k=>`<button type="button" class="ty-leg" data-a="bar" data-k="${k}" aria-pressed="${S.focus==='bar:'+k}" data-tip="${esc(BAR[k].tip)}"><span><i style="background:${k==='N'?'#5d6b75':DOT[k]}"></i>${BAR[k].t}</span><b>${T[k]}</b></button>`).join('')}</div>
+     <div class="typh2" aria-label="Progress by phase">${[['Theoretical Build',T.tb],['Prototype',T.pr]].map(([nm,c])=>`<div class="r"><b>${nm}</b><span class="m" role="img" aria-label="${nm}: ${c.D} done, ${c.I} in progress, ${c.N} not started"><i style="width:${100*c.D/d.P1.length}%;background:#2fbf71"></i><i style="width:${100*c.I/d.P1.length}%;background:#ffb020"></i><i style="width:${100*c.N/d.P1.length}%;background:#3a4650"></i></span><small>${c.D} done · ${c.I} in progress · ${c.N} not started</small></div>`).join('')}</div></div>
+    <div class="tyc typie"><div class="tyth" style="width:100%;margin-bottom:0"><h2 class="tyt">Where the ${d.P1.length} steps stand</h2></div>
+     <svg viewBox="0 0 260 260" role="group" aria-label="Donut chart of ${d.P1.length} TOY steps by readiness gate">${slices.join('')}<text x="130" y="136" text-anchor="middle" fill="var(--ink)" style="font-size:54px;font-weight:700">${d.P1.length}</text><text x="130" y="158" text-anchor="middle" fill="var(--mute)" style="font-size:13px">TOY steps</text></svg>
+     <div class="tylegs">${gs.map(g=>`<button type="button" class="ty-leg" data-a="pie" data-k="${g.k}" aria-pressed="${g.on}" data-tip="${esc('Show the steps that are: '+g.t.toLowerCase())}"><span><i style="background:${g.c}"></i>${esc(g.t)}</span><b>${g.list.length}</b></button>`).join('')}</div></div></div>
+   ${S.focus?'':'<p class="tyhint">Click a section of the bar or a slice of the chart to see exactly which steps it covers.</p>'}
+   ${panelHTML()}${p2HTML()}
+   <p class="tyf">Only steps tagged TOY are counted: ${d.P1.length} for Part 1${toyShared?` (${toyShared} shared with WED)`:''}${d.P2.length?` and ${d.P2.length} for Part 2${p2sh?` (${p2sh} shared with WED)`:''}`:''}.${d.x2?` Part 2 also lists ${d.x2} step${d.x2>1?'s':''} without a TOY tag${d.untag?` (${d.untag} with no show tag at all)`:''}, which ${d.x2>1?'are':'is'} left out.`:''}${d.x1?` Part 1 lists ${d.x1} non-TOY step${d.x1>1?'s':''}, left out.`:''}</p></div>`;
+}
+function redraw(focusSel){
+  const sc0=ROOT.scrollTop,ae=document.activeElement,fk=ae&&ae.dataset&&ae.dataset.a?`[data-a="${ae.dataset.a}"]${ae.dataset.k!=null?`[data-k="${CSS.escape(ae.dataset.k)}"]`:''}`:'';
+  const hadPanel=!!ROOT.querySelector('#typn');draw();ROOT.scrollTop=sc0;
+  const nf=fk&&ROOT.querySelector(fk);if(nf)nf.focus({preventScroll:true});
+  const pn=ROOT.querySelector('#typn');if(pn&&!hadPanel)pn.scrollIntoView({block:'nearest',behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth'});
+}
+function bind(){
+  ROOT.onclick=e=>{const b=e.target.closest('[data-a]');if(!b||!ROOT.contains(b))return;const a=b.dataset.a,k=b.dataset.k;
+    if(a==='bar'||a==='pie'){const f=a+':'+k;S.focus=S.focus===f?'':f;S.sel='';redraw()}
+    else if(a==='row'){S.sel=S.sel===k?'':k;redraw()}
+    else if(a==='close'){S.focus='';S.sel='';redraw()}
+    else if(a==='p2'){S.p2=!S.p2;redraw()}
+    else if(a==='pre'){S.slip=+k;redraw()}};
+  ROOT.onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('path[data-a]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}};
+  ROOT.oninput=e=>{if(e.target.id!=='tysl')return;S.slip=+e.target.value;const R=runway();ROOT.querySelector('#tyrun').innerHTML=R.html;ROOT.querySelector('#tystat').innerHTML=R.stats;ROOT.querySelector('#tysll').textContent=S.slip?'+'+S.slip+' weeks':'On plan';
+    ROOT.querySelectorAll('.ty-chip[data-a=pre]').forEach(c=>c.setAttribute('aria-pressed',String(+c.dataset.k===S.slip)))}
+}
+window.__toyDraw=function(root){ROOT=root;DATA=load();if(!DATA){root.innerHTML='<p class="tyhint">TOY readiness needs the Production Simulation Part 1 milestone, which is not in this data.</p>';return}bind();draw()};
+window.__toyOK=function(){return !!load()};
 })();
 </script></body></html>
